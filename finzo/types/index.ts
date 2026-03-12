@@ -65,4 +65,21 @@ export interface Reminder {
   triggerAt: number;
   recurring: 'none' | 'weekly' | 'monthly';
   isActive: boolean;
+  isDeleted: boolean;
+  notificationId?: string; // expo-notifications identifier
+  createdAt: number;
+}
+
+export interface PendingPayment {
+  id: string;
+  upiId: string;
+  payeeName: string;
+  /** Amount in paise */
+  amount: number;
+  label: string;
+  bucketId: string | null;
+  partyId: string | null;
+  upiApp: string;
+  startedAt: number;
+  status: 'pending' | 'confirmed' | 'cancelled';
 }

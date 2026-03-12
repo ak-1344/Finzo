@@ -2,8 +2,12 @@ import '../global.css';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
+import { useMonthReset } from '../hooks/useMonthReset';
 
 export default function RootLayout() {
+  // Check for month reset on app start and foreground
+  useMonthReset();
+
   return (
     <View className="flex-1 bg-background">
       <StatusBar style="dark" />

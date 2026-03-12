@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBalance } from '../../hooks/useBalance';
 import { useTransactions } from '../../hooks/useTransactions';
+import { useBuckets } from '../../hooks/useBuckets';
 import {
   formatRupees,
   formatTime,
@@ -24,6 +25,7 @@ export default function CashbookScreen() {
   const { balanceFormatted } = useBalance();
   const { groupedByDate, todayIn, todayOut, removeEntry, activeTransactions } =
     useTransactions();
+  const { getBucketById, refundToBucket } = useBuckets();
   const [filter, setFilter] = useState<FilterType>('all');
 
   // Apply filter
@@ -70,7 +72,7 @@ export default function CashbookScreen() {
     [activeTransactions]
   );
 
-  const handleDelete = (id: string, label: string) => {
+  const handleDelete = (id: string, label: string, bucketId: string | null, type: string, amount: number) => {
     Alert.alert(
       'Delete Entry',
       `Are you sure you want to delete "${label || 'Untitled'}"?`,
@@ -79,7 +81,13 @@ export default function CashbookScreen() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => removeEntry(id),
+          onPress: () => {
+            // Refund bucket if it was an expense with a bucket
+            if (type === 'out' && bucketId) {
+              refundToBucket(bucketId, amount);
+            }
+            removeEntry(id);
+          },
         },
       ]
     );
@@ -168,24 +176,37 @@ export default function CashbookScreen() {
             </View>
           </View>
         )}
-        renderItem={({ item }) => (
+        renderItem={({ item }) => {
+          const bucket = item.bucketId ? getBucketById(item.bucketId) : null;
+          return (
           <TouchableOpacity
             onPress={() => router.push(`/edit-entry?id=${item.id}`)}
-            onLongPress={() => handleDelete(item.id, item.label)}
+            onLongPress={() => handleDelete(item.id, item.label, item.bucketId, item.type, item.amount)}
             className="bg-card rounded-xl p-4 mb-2 flex-row items-center justify-between border border-gray-100"
           >
             <View className="flex-1 mr-3">
               <Text className="text-text-primary text-sm font-medium">
                 {item.label || 'Untitled'}
               </Text>
-              <Text className="text-text-muted text-xs mt-0.5">
-                {formatTime(item.timestamp)} •{' '}
-                {item.paymentMethod === 'cash'
-                  ? 'Cash'
-                  : item.paymentMethod === 'upi'
-                    ? 'UPI'
-                    : 'Manual'}
-              </Text>
+              <View className="flex-row items-center mt-0.5">
+                <Text className="text-text-muted text-xs">
+                  {formatTime(item.timestamp)} •{' '}
+                  {item.paymentMethod === 'cash'
+                    ? 'Cash'
+                    : item.paymentMethod === 'upi'
+                      ? 'UPI'
+                      : 'Manual'}
+                </Text>
+                {bucket && (
+                  <View className="flex-row items-center ml-2">
+                    <View
+                      className="w-2 h-2 rounded-full mr-1"
+                      style={{ backgroundColor: bucket.color }}
+                    />
+                    <Text className="text-text-muted text-[10px]">{bucket.name}</Text>
+                  </View>
+                )}
+              </View>
             </View>
             <Text
               className={`text-base font-bold ${
@@ -196,7 +217,8 @@ export default function CashbookScreen() {
               {formatRupees(item.amount)}
             </Text>
           </TouchableOpacity>
-        )}
+          );
+        }}
       />
 
       {/* Floating Add Button */}

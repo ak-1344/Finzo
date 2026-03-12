@@ -20,8 +20,8 @@ export default function AddBucketScreen() {
   const { addBucket, maxAllocatable, canAllocate, totalBalance } = useBuckets();
 
   const [name, setName] = useState('');
-  const [icon, setIcon] = useState(BUCKET_ICONS[0]);
-  const [color, setColor] = useState(BUCKET_COLORS[0]);
+  const [icon, setIcon] = useState<typeof BUCKET_ICONS[number]>(BUCKET_ICONS[0]);
+  const [color, setColor] = useState<typeof BUCKET_COLORS[number]>(BUCKET_COLORS[0]);
   const [amount, setAmount] = useState('');
 
   const handleSave = () => {

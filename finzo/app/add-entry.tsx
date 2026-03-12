@@ -15,14 +15,22 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTransactions } from '../hooks/useTransactions';
 import { useParties } from '../hooks/useParties';
+import { useBuckets } from '../hooks/useBuckets';
 import { rupeesToPaise, formatRupees } from '../lib/utils';
-import { Transaction, Party } from '../types';
+import { Transaction, Party, Bucket } from '../types';
 
 export default function AddEntryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ partyId?: string }>();
   const { addEntry } = useTransactions();
   const { activeParties, getParty } = useParties();
+  const {
+    activeBuckets,
+    getRemaining,
+    getUsagePercent,
+    getHealthColor,
+    spendFromBucket,
+  } = useBuckets();
 
   // Pre-select party if navigated with partyId query param
   const initialParty = params.partyId ? getParty(params.partyId) : undefined;
@@ -33,6 +41,8 @@ export default function AddEntryScreen() {
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'upi' | 'manual'>('cash');
   const [selectedParty, setSelectedParty] = useState<Party | null>(initialParty ?? null);
   const [showPartyPicker, setShowPartyPicker] = useState(false);
+  const [selectedBucket, setSelectedBucket] = useState<Bucket | null>(null);
+  const [showBucketPicker, setShowBucketPicker] = useState(false);
 
   const handleSave = () => {
     const numAmount = parseFloat(amount);
@@ -46,15 +56,22 @@ export default function AddEntryScreen() {
       return;
     }
 
+    const amountPaise = rupeesToPaise(numAmount);
+
     addEntry({
       type,
-      amount: rupeesToPaise(numAmount),
+      amount: amountPaise,
       label: label.trim(),
-      bucketId: null,
+      bucketId: selectedBucket?.id ?? null,
       partyId: selectedParty?.id ?? null,
       timestamp: Date.now(),
       paymentMethod,
     });
+
+    // Deduct from bucket if money out and bucket selected
+    if (selectedBucket && type === 'out') {
+      spendFromBucket(selectedBucket.id, amountPaise);
+    }
 
     router.back();
   };
@@ -209,12 +226,47 @@ export default function AddEntryScreen() {
             )}
           </TouchableOpacity>
 
-          {/* Bucket placeholder */}
-          <View className="bg-gray-50 rounded-xl p-4 border border-dashed border-gray-300 mb-5">
-            <Text className="text-text-muted text-xs text-center">
-              Bucket tagging → Milestone 3
-            </Text>
-          </View>
+          {/* Bucket Tagging (only for expenses) */}
+          {type === 'out' && (
+            <>
+              <Text className="text-text-secondary text-xs font-medium uppercase tracking-wider mb-2">
+                From Bucket (Optional)
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowBucketPicker(true)}
+                className={`bg-card rounded-xl px-4 py-4 border mb-5 flex-row items-center justify-between ${
+                  selectedBucket ? 'border-primary' : 'border-gray-200'
+                }`}
+              >
+                {selectedBucket ? (
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      className="w-8 h-8 rounded-full items-center justify-center mr-3"
+                      style={{ backgroundColor: selectedBucket.color + '20' }}
+                    >
+                      <Text className="text-sm">{selectedBucket.icon}</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-text-primary text-sm font-medium">{selectedBucket.name}</Text>
+                      <Text className="text-text-muted text-xs">
+                        {formatRupees(getRemaining(selectedBucket))} remaining
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => setSelectedBucket(null)}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Text className="text-danger text-xs font-medium">✕ Remove</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <Text className="text-text-muted text-sm">
+                    {activeBuckets.length > 0 ? 'Tap to select a bucket...' : 'No buckets yet — add one first'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </>
+          )}
         </ScrollView>
 
         {/* Save Button (fixed at bottom) */}
@@ -313,6 +365,103 @@ export default function AddEntryScreen() {
                         )}
                         {isSelected && (
                           <Text className="text-primary text-lg ml-2">✓</Text>
+                        )}
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+              )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* Bucket Picker Modal */}
+        <Modal
+          visible={showBucketPicker}
+          animationType="slide"
+          transparent
+          onRequestClose={() => setShowBucketPicker(false)}
+        >
+          <View className="flex-1 bg-black/40 justify-end">
+            <View className="bg-background rounded-t-3xl max-h-[70%] pb-6">
+              <View className="flex-row items-center justify-between px-5 py-4 border-b border-gray-200">
+                <Text className="text-text-primary text-lg font-bold">Select Bucket</Text>
+                <TouchableOpacity onPress={() => setShowBucketPicker(false)}>
+                  <Text className="text-primary text-base font-medium">Done</Text>
+                </TouchableOpacity>
+              </View>
+
+              {activeBuckets.length === 0 ? (
+                <View className="items-center py-10">
+                  <Text className="text-4xl mb-3">🪣</Text>
+                  <Text className="text-text-muted text-sm">No buckets yet</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowBucketPicker(false);
+                      router.push('/add-bucket');
+                    }}
+                    className="mt-3 bg-primary/10 px-4 py-2 rounded-lg"
+                  >
+                    <Text className="text-primary text-sm font-medium">+ Add Bucket</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <FlatList
+                  data={activeBuckets}
+                  keyExtractor={(item) => item.id}
+                  contentContainerClassName="px-5 py-2"
+                  renderItem={({ item }) => {
+                    const isSelected = selectedBucket?.id === item.id;
+                    const remaining = getRemaining(item);
+                    const healthColor = getHealthColor(item);
+                    const numAmount = parseFloat(amount) || 0;
+                    const amountPaise = rupeesToPaise(numAmount);
+                    const isLow = amountPaise > remaining && remaining > 0;
+
+                    return (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedBucket(item);
+                          setShowBucketPicker(false);
+                        }}
+                        className={`flex-row items-center py-3 px-3 rounded-xl mb-1 ${
+                          isSelected ? 'bg-primary/10' : 'bg-card'
+                        }`}
+                      >
+                        <View
+                          className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                          style={{ backgroundColor: item.color + '20' }}
+                        >
+                          <Text className="text-xl">{item.icon}</Text>
+                        </View>
+                        <View className="flex-1">
+                          <Text className="text-text-primary text-sm font-medium">
+                            {item.name}
+                            {item.isOverflow && (
+                              <Text className="text-text-muted text-xs"> (overflow)</Text>
+                            )}
+                          </Text>
+                          <View className="flex-row items-center">
+                            <Text className="text-text-muted text-xs">
+                              {formatRupees(remaining)} remaining
+                            </Text>
+                            {isLow && (
+                              <Text className="text-warning text-[10px] ml-2">⚠️ Low</Text>
+                            )}
+                          </View>
+                        </View>
+                        {/* Mini progress bar */}
+                        <View className="w-12 h-1.5 rounded-full bg-gray-100 mr-2">
+                          <View
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${Math.min(getUsagePercent(item), 100)}%`,
+                              backgroundColor: healthColor,
+                            }}
+                          />
+                        </View>
+                        {isSelected && (
+                          <Text className="text-primary text-lg">✓</Text>
                         )}
                       </TouchableOpacity>
                     );

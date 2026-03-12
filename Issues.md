@@ -25,7 +25,19 @@
 
 ## ✅ Resolved Issues
 
-_None yet._
+### [ISSUE-003] — TypeScript baseUrl deprecation warning
+- **Type:** Warning
+- **Found:** M3 (Session 3)
+- **Details:** TS 5.9.2 warns that `baseUrl` in tsconfig.json is deprecated and will stop working in TypeScript 7.0.
+- **Resolution:** Added `"ignoreDeprecations": "6.0"` to compilerOptions in tsconfig.json
+- **Status:** Resolved
+
+### [ISSUE-004] — Package version mismatches with Expo SDK 55
+- **Type:** Warning (non-blocking)
+- **Found:** M3 (Session 3)
+- **Details:** async-storage@3.0.1, reanimated@4.2.2, worklets@0.7.4 were newer than Expo SDK 55 expects. Caused warnings on `expo start`.
+- **Resolution:** Downgraded to expected versions: async-storage@2.2.0, reanimated@4.2.1, worklets@0.7.2
+- **Status:** Resolved
 
 ---
 

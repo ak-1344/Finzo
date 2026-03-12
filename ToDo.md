@@ -47,16 +47,24 @@
 - [x] Home screen "Add Party" quick action wired to /add-party route
 - [x] Android bundle export verified (no errors)
 
-## 🟡 Backlog — M3: Bucket System
+## ✅ Completed Milestone: M3 — Bucket System
 
-- [ ] Buckets screen — cards with progress bars
-- [ ] Add / Edit / Delete bucket
-- [ ] Overflow bucket (auto-created, non-deletable)
-- [ ] Bucket allocation validation
-- [ ] Low bucket warning logic
-- [ ] Monthly preset — save and auto-apply
-- [ ] `useBuckets` hook
-- [ ] `useMonthReset` hook
+- [x] Zustand bucketStore with persistence — bucket CRUD, spend/refund, allocation, overflow, month preset, month reset
+- [x] useBuckets hook — derived data (activeBuckets, userBuckets, overflow, totals, health colors, low-bucket warnings, allocation validation)
+- [x] useMonthReset hook — AppState listener, auto-reset on month change when preset has autoApply
+- [x] Buckets screen — balance summary card, allocation overview, bucket cards with progress bars, health coloring, low-budget warnings, preset save/reset buttons, auto-apply toggle
+- [x] Add Bucket screen — name, icon picker (16 emojis), color picker (8 colors), allocation amount, live preview, validation against total balance
+- [x] Edit Bucket screen — update name/icon/color/allocation, current usage display, delete with overflow transfer, overflow info card
+- [x] Overflow bucket — auto-created on first bucket add, cannot be deleted, collects leftover on month reset + deleted bucket allocations
+- [x] Bucket allocation validation — cannot exceed total balance, max allocatable displayed
+- [x] Low bucket warnings — critical badge on >80% usage, color-coded progress bars (green/amber/red)
+- [x] Monthly preset — save current allocation, toggle auto-apply, auto-reset zeros spending and moves leftover to overflow
+- [x] Bucket picker in Add Entry — modal with all buckets, remaining balance, mini progress bars, low-budget warning
+- [x] Bucket tag in Cashbook — colored dot + bucket name on transactions
+- [x] Bucket refund on delete — edit-entry and cashbook delete both refund bucket on expense deletion
+- [x] Month reset wired in root layout (_layout.tsx) via useMonthReset
+- [x] Bucket type updated with isDeleted + createdAt fields
+- [x] Android bundle export verified (no errors)
 
 ## 🟡 Backlog — M4: Payment Flow + UPI
 

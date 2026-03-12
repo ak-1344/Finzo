@@ -4,6 +4,49 @@
 
 ---
 
+## Session 3 — M3 Complete (Bucket System) + Preview Fix
+
+### Done
+- Fixed tsconfig.json deprecation warning (added `ignoreDeprecations: "6.0"` for baseUrl)
+- Downgraded packages to Expo-expected versions: async-storage@2.2.0, reanimated@4.2.1, worklets@0.7.2 (fixes compatibility warnings)
+- Got Expo dev server running cleanly on port 8081 (no warnings)
+- Updated Bucket type with `isDeleted` and `createdAt` fields (per AGENT.md soft-delete rule)
+- Created bucketStore.ts — Zustand store with persistence, bucket CRUD, spend/refund, overflow bucket management, allocation/reallocation, month preset save/apply/toggle, month reset (zeros spending, leftover → overflow, auto-apply preset)
+- Created useBuckets.ts hook — derived data (activeBuckets, userBuckets, overflow, totalAllocated, totalSpent, unallocated, maxAllocatable, lowBuckets), health helpers (getRemaining, getUsagePercent, getHealthColor, getHealthLabel), allocation validation (canAllocate)
+- Created useMonthReset.ts hook — checks on mount + AppState foreground, auto-triggers resetMonth when month changes and preset has autoApply
+- Replaced placeholder buckets.tsx with full Buckets screen — balance summary card (total balance, unallocated, allocated, spent), bucket cards with progress bars (color-coded green/amber/red), low-budget warning badges, preset save/reset month buttons, auto-apply toggle, floating add button, empty state
+- Created add-bucket.tsx — name input, icon picker (16 emojis), color picker (8 colors), amount with max-allocatable display, allocation validation, live preview card
+- Created edit-bucket.tsx — current usage stats, edit name/icon/color/allocation, max-for-bucket calculation, overflow info card, delete with overflow transfer
+- Updated add-entry.tsx — added bucket picker modal (FlatList with all active buckets, remaining balance, mini progress bars, low-budget warning, bucket health colors), deducts from bucket on expense save
+- Updated cashbook.tsx — shows bucket tag (colored dot + name) on transactions with buckets, refunds bucket on delete
+- Updated edit-entry.tsx — shows linked bucket tag (read-only), refunds bucket on delete
+- Wired useMonthReset into root _layout.tsx for app-level month change detection
+- Verified Android bundle export passes with all M3 changes
+
+### Decisions Made
+- Overflow bucket has hardcoded ID 'overflow' for simplicity (per context.md decision)
+- 16 preset icons (emojis) and 8 preset colors — keeps UI clean, avoids custom picker complexity
+- Bucket picker only shows on Money Out (expenses) — income doesn't come from a bucket (per user-flow.md)
+- Bucket deduct happens in the screen (add-entry.tsx) not in the hook — avoids coupling useTransactions to useBuckets
+- Edit-entry shows bucket tag as read-only — changing bucket mid-edit would require complex refund/re-deduct logic, deferred for simplicity
+- Month reset only auto-triggers when preset autoApply is ON — manual reset button always available
+
+### Files Created / Modified
+- finzo/tsconfig.json (MODIFIED — added ignoreDeprecations)
+- finzo/types/index.ts (MODIFIED — Bucket type + isDeleted + createdAt)
+- finzo/store/bucketStore.ts (NEW)
+- finzo/hooks/useBuckets.ts (NEW)
+- finzo/hooks/useMonthReset.ts (NEW)
+- finzo/app/(tabs)/buckets.tsx (REPLACED — placeholder → full screen)
+- finzo/app/add-bucket.tsx (NEW)
+- finzo/app/edit-bucket.tsx (NEW)
+- finzo/app/add-entry.tsx (MODIFIED — bucket picker + spend deduction)
+- finzo/app/(tabs)/cashbook.tsx (MODIFIED — bucket tag + refund on delete)
+- finzo/app/edit-entry.tsx (MODIFIED — bucket display + refund on delete)
+- finzo/app/_layout.tsx (MODIFIED — useMonthReset wired)
+
+---
+
 ## Session 2 — M2 Complete (Parties Ledger)
 
 ### Done

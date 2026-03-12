@@ -13,13 +13,15 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTransactions } from '../hooks/useTransactions';
 import { useTransactionStore } from '../store/transactionStore';
-import { rupeesToPaise, paiseToRupees } from '../lib/utils';
+import { useBuckets } from '../hooks/useBuckets';
+import { rupeesToPaise, paiseToRupees, formatRupees } from '../lib/utils';
 
 export default function EditEntryScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { editEntry, removeEntry } = useTransactions();
   const transactions = useTransactionStore((s) => s.transactions);
+  const { getBucketById, refundToBucket } = useBuckets();
 
   const transaction = transactions.find((t) => t.id === id && !t.isDeleted);
 
@@ -80,6 +82,10 @@ export default function EditEntryScreen() {
           text: 'Delete',
           style: 'destructive',
           onPress: () => {
+            // Refund bucket if this was an expense with a bucket
+            if (transaction.type === 'out' && transaction.bucketId) {
+              refundToBucket(transaction.bucketId, transaction.amount);
+            }
             removeEntry(id!);
             router.back();
           },
@@ -87,6 +93,10 @@ export default function EditEntryScreen() {
       ]
     );
   };
+
+  const linkedBucket = transaction.bucketId
+    ? getBucketById(transaction.bucketId)
+    : null;
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -203,6 +213,22 @@ export default function EditEntryScreen() {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Bucket Tag (read-only display) */}
+          {linkedBucket && (
+            <View className="bg-card rounded-xl px-4 py-3 border border-gray-200 mb-5 flex-row items-center">
+              <View
+                className="w-8 h-8 rounded-full items-center justify-center mr-3"
+                style={{ backgroundColor: linkedBucket.color + '20' }}
+              >
+                <Text className="text-sm">{linkedBucket.icon}</Text>
+              </View>
+              <View>
+                <Text className="text-text-muted text-[10px] uppercase">From Bucket</Text>
+                <Text className="text-text-primary text-sm font-medium">{linkedBucket.name}</Text>
+              </View>
+            </View>
+          )}
         </ScrollView>
 
         {/* Save Button */}
