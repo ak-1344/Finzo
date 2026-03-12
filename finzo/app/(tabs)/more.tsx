@@ -1,14 +1,16 @@
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useBalance } from '../../hooks/useBalance';
 
 export default function MoreScreen() {
+  const router = useRouter();
   const { balanceFormatted } = useBalance();
 
   const menuItems = [
     { emoji: '💰', label: 'Update Balance', sublabel: `Current: ${balanceFormatted}`, available: false },
-    { emoji: '🔔', label: 'Reminders', sublabel: 'Milestone 5', available: false },
-    { emoji: '📊', label: 'Reports', sublabel: 'Milestone 5', available: false },
+    { emoji: '🔔', label: 'Reminders', sublabel: 'Manage your reminders', available: true, route: '/reminders' },
+    { emoji: '📊', label: 'Reports', sublabel: 'View spending reports', available: true, route: '/reports' },
     { emoji: '🤖', label: 'AI Assistant', sublabel: 'Milestone 7', available: false },
     { emoji: '☁️', label: 'Backup & Sync', sublabel: 'Milestone 6', available: false },
     { emoji: '🔒', label: 'App Lock', sublabel: 'Milestone 6', available: false },
@@ -24,9 +26,13 @@ export default function MoreScreen() {
         {menuItems.map((item, idx) => (
           <TouchableOpacity
             key={idx}
-            onPress={() =>
-              Alert.alert('Coming Soon', `${item.label} will be available in a future update.`)
-            }
+            onPress={() => {
+              if (item.available && item.route) {
+                router.push(item.route as any);
+              } else {
+                Alert.alert('Coming Soon', `${item.label} will be available in a future update.`);
+              }
+            }}
             className="bg-card rounded-xl p-4 mb-2 flex-row items-center border border-gray-100"
           >
             <Text className="text-xl mr-4">{item.emoji}</Text>

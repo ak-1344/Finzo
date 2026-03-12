@@ -7,13 +7,6 @@
 
 ## 🔴 Open Issues
 
-### [ISSUE-001] — Node version slightly below RN 0.83 requirement
-- **Type:** Warning (non-blocking)
-- **Found:** M0 Setup
-- **Details:** Node v20.19.3 installed, RN 0.83 / Metro 0.83 packages want >= 20.19.4. Causes npm warnings but no functional issues.
-- **Status:** Open (monitoring)
-- **Proposed Fix:** Update Node to >= 20.19.4 when convenient
-
 ### [ISSUE-002] — React peer dependency conflict with expo-router
 - **Type:** Warning (non-blocking)
 - **Found:** M0 Setup
@@ -24,6 +17,13 @@
 ---
 
 ## ✅ Resolved Issues
+
+### [ISSUE-001] — Node version slightly below RN 0.83 requirement
+- **Type:** Warning (non-blocking)
+- **Found:** M0 Setup
+- **Details:** Node v20.19.3 installed, RN 0.83 / Metro 0.83 packages want >= 20.19.4.
+- **Resolution:** Upgraded to Node v20.19.4 via nvm
+- **Status:** Resolved
 
 ### [ISSUE-003] — TypeScript baseUrl deprecation warning
 - **Type:** Warning
@@ -45,8 +45,8 @@
 
 ### [RISK-001] UPI Deeplink Compatibility
 - **Details:** `tez://` (GPay) and `phonepe://` may not work on all devices
-- **Mitigation:** Always fallback to generic `upi://pay` scheme
-- **Status:** Pre-emptive — handle during M4
+- **Mitigation:** Always fallback to generic `upi://pay` scheme. Implemented in lib/upi.ts with try/canOpenURL/fallback chain
+- **Status:** Implemented in M4 — fallback logic working
 
 ### [RISK-002] Payment Confirmation Gap
 - **Details:** User pays on external app, kills Witty Wallet, payment never confirmed

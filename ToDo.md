@@ -68,16 +68,28 @@
 
 ## 🟡 Backlog — M4: Payment Flow + UPI
 
-- [ ] QR Scanner screen
-- [ ] Pay to Number screen
-- [ ] Payment flow modal — multi-step
-- [ ] UPI deeplink builder
-- [ ] Return flow — confirmation
-- [ ] Pending payment recovery
+- [x] QR Scanner screen (expo-camera barcode scanning)
+- [x] Pay to Number screen (manual UPI ID entry — merged into pay.tsx Step 1)
+- [x] Payment flow modal — multi-step (Details → Bucket → Confirm → Result)
+- [x] UPI deeplink builder (lib/upi.ts — parse QR, validate, build deeplinks, open UPI apps)
+- [x] Return flow — "Did it go through?" confirmation with Yes/No/Retry
+- [x] Pending payment recovery (paymentStore persisted, AppState listener on return)
+- [x] Auto-log on confirmation → cashbook + bucket deducted
+- [x] Home screen quick actions wired (Scan QR → /payment/scan, Pay → /payment/pay)
 
-## 🟡 Backlog — M5–M8
+## ✅ Completed Milestone: M5 — Reminders + Reports
 
-- [ ] M5: Reminders + Reports
+- [x] Zustand reminderStore with persistence — reminder CRUD, toggle, soft-delete
+- [x] useReminders hook — scheduling via expo-notifications, add/update/delete with notification management, recurring support
+- [x] Reminders screen — list with toggle switches, add/edit modal (message, date, time, recurring type, party linking), party picker, delete
+- [x] Local push notifications — one-time + weekly (native) + monthly (date-based), permission request, cancel on delete/toggle
+- [x] useReports aggregation hook — date range filtering, totals, bucket-wise spending, daily trend, top 5 labels, HTML generation for PDF
+- [x] Reports screen — date range presets (Today/Week/Month/30d/90d), summary cards, SVG donut pie chart, SVG bar chart, top 5 labels, PDF export via expo-print + expo-sharing
+- [x] More tab wired — Reminders and Reports now navigable (replaced "Coming Soon" stubs)
+- [x] Android bundle export verified (1625 modules, no errors)
+
+## 🟡 Backlog — M6–M8
+
 - [ ] M6: Firebase Sync + Auth
 - [ ] M7: AI Assistant
 - [ ] M8: Polish + Launch

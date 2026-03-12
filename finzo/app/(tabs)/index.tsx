@@ -98,18 +98,12 @@ export default function HomeScreen() {
             <QuickAction
               emoji="📷"
               label="Scan QR"
-              onPress={() => {
-                // TODO: M4 - Payment flow
-                Alert.alert('Coming Soon', 'QR scanning will be available in a future update.');
-              }}
+              onPress={() => router.push('/payment/scan')}
             />
             <QuickAction
               emoji="📞"
               label="Pay"
-              onPress={() => {
-                // TODO: M4 - Payment flow
-                Alert.alert('Coming Soon', 'UPI payments will be available in a future update.');
-              }}
+              onPress={() => router.push('/payment/pay')}
             />
             <QuickAction
               emoji="➕"

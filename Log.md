@@ -4,6 +4,55 @@
 
 ---
 
+## Session 4 — M4 + M5 Complete (Payment Flow + UPI Deeplink + Reminders + Reports)
+
+### Done
+- Resolved ISSUE-001: Upgraded Node from v20.19.3 to v20.19.4 via nvm
+- Installed M4+M5 dependencies: expo-camera, expo-notifications, expo-print, expo-sharing, react-native-svg (all with --legacy-peer-deps)
+- Created lib/upi.ts — UPI deeplink builder: parseUPIQR (URL parsing), isValidUPIId (regex), buildUPIDeeplink (URL construction), openUPIPayment (GPay/PhonePe/Paytm with fallback to generic upi:// scheme), getUPIApps (UI display list)
+- Added PendingPayment type to types/index.ts — tracks mid-payment state for recovery
+- Updated Reminder type — added isDeleted (soft-delete pattern), notificationId (expo-notifications), createdAt
+- Created store/paymentStore.ts — Zustand + persist, startPayment/confirmPayment/cancelPayment/clearPending
+- Created app/payment/scan.tsx — QR Scanner screen using expo-camera CameraView with barcode scanning, permission handling, parses UPI QR and routes to payment flow, fallback to manual entry
+- Created app/payment/pay.tsx — Multi-step payment flow: Step 1 (UPI ID + name + amount + label) → Step 2 (bucket selection with remaining balance + low-balance warnings) → Step 3 (confirm with summary card + UPI app selection) → Step 4 ("Did it go through?" with Yes/No/Retry), AppState listener for return from UPI app, pending payment recovery on mount
+- Wired Home screen quick actions: "Scan QR" → /payment/scan, "Pay" → /payment/pay (replaced "Coming Soon" alerts)
+- Created store/reminderStore.ts — Zustand + persist, reminder CRUD, toggle active, soft-delete
+- Created hooks/useReminders.ts — full notification scheduling via expo-notifications, permission handling, one-time/weekly (native trigger)/monthly (date-based) scheduling, cancel on delete/toggle, reschedule on update
+- Created app/reminders.tsx — Reminders screen: list with toggle switches, add/edit modal with message/date(DD/MM/YYYY)/time(HH:MM)/recurring type/party linking, party picker sub-modal, long-press delete, summary count
+- Created hooks/useReports.ts — aggregation hook: date range filtering, totalIn/totalOut/netFlow, bucket-wise spending with percentages, daily trend (fill all days), top 5 expense labels, HTML report generator for PDF export
+- Created app/reports.tsx — Reports screen: horizontal scrollable date range presets (Today/This Week/This Month/Last 30d/Last 90d), 4 summary cards, SVG donut pie chart (bucket-wise with stroke-dasharray technique + center hole), SVG bar chart (daily in/out trend), top 5 expense labels ranking, PDF export via expo-print + expo-sharing
+- Updated app/(tabs)/more.tsx — Reminders and Reports now navigable with useRouter (replaced all "Coming Soon" stubs for M5 items)
+- Verified Android bundle export: 1625 modules, no errors, 0 TypeScript errors
+
+### Decisions Made
+- Used expo-camera CameraView (not deprecated expo-barcode-scanner) for QR scanning
+- Payment flow is a single multi-step screen (pay.tsx) not separate screens — smoother UX, shared state
+- QR scan → parse → replace navigate to pay.tsx with pre-filled params — no back navigation to scanner
+- UPI deeplink uses try→canOpenURL→openURL with app-specific schemes first, then generic upi:// fallback
+- Pending payment persisted to AsyncStorage so mid-flow app kill can recover
+- Reminders use expo-notifications with SchedulableTriggerInputTypes — weekly uses native WEEKLY trigger, monthly uses DATE trigger (reschedule needed)
+- Reports use SVG pie chart with stroke-dasharray circles (donut style) — simpler than arc paths, works well with react-native-svg
+- Bar chart uses simple Rect elements with proportional heights — readable up to 30 bars
+- PDF export generates HTML → expo-print.printToFileAsync → expo-sharing — clean styled report
+- Date/time input for reminders uses plain TextInput (DD/MM/YYYY, HH:MM) — avoids date picker library dependency
+
+### Files Created / Modified
+- finzo/types/index.ts (MODIFIED — PendingPayment type, Reminder updated with isDeleted/notificationId/createdAt)
+- finzo/lib/upi.ts (NEW — UPI parsing, validation, deeplink builder, app opener)
+- finzo/store/paymentStore.ts (NEW — pending payment state with persistence)
+- finzo/store/reminderStore.ts (NEW — reminder CRUD with persistence)
+- finzo/hooks/useReminders.ts (NEW — notification scheduling, CRUD wrappers)
+- finzo/hooks/useReports.ts (NEW — aggregation, date ranges, HTML generator)
+- finzo/app/payment/scan.tsx (NEW — QR scanner screen)
+- finzo/app/payment/pay.tsx (NEW — multi-step payment flow)
+- finzo/app/reminders.tsx (NEW — reminders screen with add/edit modal)
+- finzo/app/reports.tsx (NEW — reports screen with SVG charts + PDF export)
+- finzo/app/(tabs)/index.tsx (MODIFIED — quick actions wired to payment routes)
+- finzo/app/(tabs)/more.tsx (MODIFIED — Reminders + Reports navigation)
+- finzo/package.json (MODIFIED — added expo-camera, expo-notifications, expo-print, expo-sharing, react-native-svg)
+
+---
+
 ## Session 3 — M3 Complete (Bucket System) + Preview Fix
 
 ### Done

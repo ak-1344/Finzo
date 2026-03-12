@@ -4,50 +4,54 @@
 
 ---
 
-**Active Milestone:** M3 — Bucket System ✅ COMPLETE
-**Last Worked On:** Full M3 build — bucket store, hooks, all bucket screens, bucket linking in Add Entry, month reset
-**Overall Progress:** ~45% (M0 + M1 + M2 + M3 of 8 milestones complete)
+**Active Milestone:** M4 + M5 ✅ COMPLETE
+**Last Worked On:** Full M4 (Payment Flow + UPI Deeplink) + Full M5 (Reminders + Reports) build
+**Overall Progress:** ~62% (M0 + M1 + M2 + M3 + M4 + M5 of 8 milestones complete)
 
 ---
 
 ## What's Working
 - App scaffolded with Expo SDK 55, TypeScript, Expo Router, NativeWind v4
-- 5-tab navigation: Home, Cashbook, Parties, Buckets (stub), More (stub)
-- **Home screen**: Greeting + date, balance card (tap to edit), today's in/out summary, quick actions (Add Entry, Add Party), recent 5 transactions
-- **Add Entry screen**: IN/OUT toggle, amount, label, payment method, **optional party linking** (party picker modal), **optional bucket tagging** (bucket picker modal with remaining balance + health)
-- **Cashbook screen**: Date-grouped SectionList, day totals, filter tabs (All/In/Out), long-press delete, floating Add button, **bucket tag** (colored dot + name) on transactions
+- 5-tab navigation: Home, Cashbook, Parties, Buckets, More
+- **Home screen**: Greeting + date, balance card (tap to edit), today's in/out summary, quick actions (Scan QR → QR scanner, Pay → UPI flow, Add Entry, Add Party), recent 5 transactions
+- **Add Entry screen**: IN/OUT toggle, amount, label, payment method, optional party linking (party picker modal), optional bucket tagging (bucket picker modal with remaining balance + health)
+- **Cashbook screen**: Date-grouped SectionList, day totals, filter tabs (All/In/Out), long-press delete, floating Add button, bucket tag on transactions
 - **Edit Entry screen**: Pre-fills existing data, save changes recalculates balance, delete with confirmation
 - **Parties screen**: Summary card (You Will Give / You Will Get), filter tabs (All/Customers/Suppliers), party list with balances, floating add button
-- **Add Party screen**: Customer/Supplier type toggle, name input, saves and navigates to party detail
-- **Party Detail screen**: Balance card (colored), transaction timeline, Give/Get bottom sheet modal, settle party, share statement via Share API, delete party/transactions
+- **Add Party screen**: Customer/Supplier type toggle, name input
+- **Party Detail screen**: Balance card, transaction timeline, Give/Get bottom sheet, settle party, share statement, delete party/transactions
+- **Buckets screen**: Balance summary card, bucket cards with progress bars (color-coded health), preset save/reset, auto-apply toggle, floating add button
+- **Add/Edit Bucket screens**: Name, icon picker, color picker, allocation with validation, live preview
+- **Overflow bucket**: Auto-created, catches leftover on reset + deleted bucket allocations
+- **Month reset**: useMonthReset hook in root layout, auto-triggers on month change
+- **QR Scanner** (NEW M4): Camera-based UPI QR scanning via expo-camera, parses UPI QR → auto-fills payment flow
+- **Payment Flow** (NEW M4): Multi-step modal (Details → Bucket → Confirm → Result), UPI deeplink builder (GPay/PhonePe/Paytm/generic fallback), pending payment recovery via AppState, "Did it go through?" confirmation, auto-logs to cashbook + bucket on confirm
+- **UPI Deeplink Library** (NEW M4): Parse UPI QR strings, validate UPI IDs, build deeplinks, open preferred UPI app with fallback
+- **Reminders** (NEW M5): Full CRUD, one-time/weekly/monthly scheduling, link to party, local push notifications via expo-notifications, toggle active/inactive
+- **Reports** (NEW M5): Date range presets (Today/Week/Month/30d/90d), summary cards (income/expense/net/count), SVG donut pie chart (bucket-wise spending), SVG bar chart (daily trend), top 5 expense labels, PDF export via expo-print + expo-sharing
+- **More tab**: Reminders and Reports now navigable (replaced "Coming Soon" stubs)
 - **Balance management**: Manual set/update via modal, paise-based storage, formatted display
 - **Persistence**: All data persists across app restarts via AsyncStorage + Zustand persist middleware
-- **Android bundle exports successfully** (verified after M2)
-
-- **Buckets screen**: Balance summary card, bucket cards with progress bars (color-coded health), preset save/reset, auto-apply toggle, floating add button
-- **Add Bucket screen**: Name, icon picker (16 emojis), color picker (8 colors), allocation with validation, live preview
-- **Edit Bucket screen**: Update all fields, current usage display, delete with overflow transfer
-- **Overflow bucket**: Auto-created, catches leftover on reset + deleted bucket allocations
-- **Month reset**: useMonthReset hook in root layout, auto-triggers on month change with autoApply
+- **Android bundle exports successfully** (verified after M4+M5, 1625 modules)
 
 ## What's Not Yet Built
-- UPI payment flow (M4)
-- Reminders, Reports, Firebase, AI, Polish (M5–M8)
+- Firebase Sync + Auth (M6)
+- AI Assistant (M7)
+- Polish + Launch Prep (M8)
 
 ## Blockers
-- Node v20.19.3 is one patch below what some RN 0.83 packages want (20.19.4) — no functional issues so far, just warnings
-- Used --legacy-peer-deps for installs due to React 19.2.0 vs 19.2.4 peer conflict
+- Used --legacy-peer-deps for installs due to React 19.2.0 vs 19.2.4 peer conflict (non-blocking)
 
 ---
 
 ## ▶️ Next Action (Start Here Next Session)
 
-Start **Milestone 4 — Payment Flow + UPI Deeplink**:
-1. QR Scanner screen (expo-barcode-scanner)
-2. Parse UPI QR → extract UPI ID, name, amount
-3. Pay to Number screen (manual UPI ID entry)
-4. Payment flow modal — multi-step: amount → bucket → confirm
-5. UPI deeplink builder (useUPIDeeplink hook)
-6. Return flow — "Did it go through?" confirmation
-7. Pending payment recovery (AppState listener)
-8. Auto-log on confirmation → cashbook + bucket deducted
+Start **Milestone 6 — Firebase Sync + Auth**:
+1. Firebase project setup
+2. Firebase Auth — phone OTP login
+3. Firestore schema mirroring local data models
+4. `useBackup` hook — sync on/off toggle
+5. Conflict resolution (last-write-wins for MVP)
+6. Restore on new device login
+7. App PIN + biometric lock (expo-local-authentication)
+8. Settings screen — all toggles
