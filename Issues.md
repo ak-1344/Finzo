@@ -7,7 +7,19 @@
 
 ## 🔴 Open Issues
 
-_None yet. Project not started._
+### [ISSUE-001] — Node version slightly below RN 0.83 requirement
+- **Type:** Warning (non-blocking)
+- **Found:** M0 Setup
+- **Details:** Node v20.19.3 installed, RN 0.83 / Metro 0.83 packages want >= 20.19.4. Causes npm warnings but no functional issues.
+- **Status:** Open (monitoring)
+- **Proposed Fix:** Update Node to >= 20.19.4 when convenient
+
+### [ISSUE-002] — React peer dependency conflict with expo-router
+- **Type:** Warning (non-blocking)
+- **Found:** M0 Setup
+- **Details:** expo-router pulls react-dom which requires react@^19.2.4 but Expo SDK 55 pins react@19.2.0. Required --legacy-peer-deps for installs.
+- **Status:** Open (monitoring)
+- **Proposed Fix:** Will resolve when Expo SDK updates react version
 
 ---
 

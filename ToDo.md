@@ -5,96 +5,71 @@
 
 ---
 
-## 🔴 Current Milestone: M0 — Setup & Design
+## ✅ Completed Milestone: M0 — Setup & Design
 
-### In Progress
-- [ ] Nothing started yet
-
-### Up Next
-- [ ] Init Expo project with TypeScript template
-- [ ] Install all dependencies (see AGENT.md Step 4)
-- [ ] Configure NativeWind + babel
-- [ ] Set up Expo Router with 5-tab navigation
-- [ ] Create constants/colors.ts with design tokens
-- [ ] Create all TypeScript interfaces in types/index.ts
-- [ ] Create screen shell files (empty screens with correct titles)
-- [ ] Set up Zustand stores (balance, transactions, buckets, parties)
-- [ ] Verify app launches and navigates all tabs
-- [ ] Write M0 summary to Log.md
-
-### Completed (M0)
-- Nothing yet
+- [x] Init Expo project with TypeScript template
+- [x] Install all dependencies (expo-router, nativewind, zustand, async-storage, react-hook-form, reanimated, worklets)
+- [x] Configure NativeWind v4 + babel + metro + tailwind
+- [x] Set up Expo Router with 5-tab navigation
+- [x] Create constants/colors.ts with design tokens
+- [x] Create all TypeScript interfaces in types/index.ts
+- [x] Create screen shell files for all tabs (Home, Cashbook, Parties, Buckets, More)
+- [x] Set up Zustand stores (balance, transactions) with AsyncStorage persistence
+- [x] Verify app bundles successfully (Android export passed)
 
 ---
 
-## 🟡 Backlog — M1: Cashbook MVP
-- [ ] Home screen — balance display (editable), quick action buttons
-- [ ] Add Entry screen — IN/OUT toggle, amount, label, date, bucket, party
-- [ ] Cashbook screen — date-grouped list, running balance
-- [ ] useBalance hook
-- [ ] useTransactions hook (CRUD)
-- [ ] AsyncStorage persistence
-- [ ] Edit / delete entry with recalculation
-- [ ] Empty state for cashbook (no entries yet)
+## ✅ Completed Milestone: M1 — Cashbook MVP
 
-## 🟡 Backlog — M2: Parties Ledger
-- [ ] Parties screen with tabs
-- [ ] Add party screen
-- [ ] Party detail screen (timeline + balance)
-- [ ] Give / Get entry flow
-- [ ] Settlement marking
-- [ ] Share statement
-- [ ] useParties hook
+- [x] Home screen — balance display, greeting, today's summary, quick actions
+- [x] Home screen — manual balance update modal (tap to edit)
+- [x] Add Entry screen — IN/OUT toggle, amount, label, payment method
+- [x] Cashbook screen — date-grouped SectionList, running balance
+- [x] Cashbook screen — filter tabs (All / In / Out)
+- [x] Edit Entry screen — pre-filled form, save changes
+- [x] Delete entry — confirmation dialog, balance reversal
+- [x] `useBalance` hook — get/set/format balance in paise/rupees
+- [x] `useTransactions` hook — CRUD with balance sync, date grouping
+- [x] Persist to AsyncStorage via Zustand persist middleware
+- [x] Utility functions — formatRupees, paise conversion, date grouping
+
+---
+
+## ✅ Completed Milestone: M2 — Parties Ledger
+
+- [x] Zustand partyStore with persistence, party CRUD, party transaction CRUD, settlement, balance recalculation
+- [x] useParties hook — derived data, filtering (customers/suppliers), totals, statement generation
+- [x] Parties screen — summary card (You Will Give / You Will Get), filter tabs (All/Customers/Suppliers), FlatList, floating add button
+- [x] Add Party screen — Customer/Supplier toggle, name input, save + navigate to detail
+- [x] Party Detail screen — balance card, transaction timeline, Give/Get bottom sheet modal, settlement, share statement, delete
+- [x] Share statement — generates plain-text statement via Share API
+- [x] Link transaction to party — party picker in Add Entry screen (optional selection, modal with party list)
+- [x] Home screen "Add Party" quick action wired to /add-party route
+- [x] Android bundle export verified (no errors)
 
 ## 🟡 Backlog — M3: Bucket System
-- [ ] Buckets screen with cards + progress bars
-- [ ] Add / Edit / Delete bucket
-- [ ] Overflow bucket (auto, non-deletable)
-- [ ] Allocation validation
-- [ ] Monthly preset + auto-apply
-- [ ] Month-end reset
-- [ ] useBuckets hook
-- [ ] useMonthReset hook
 
-## 🟡 Backlog — M4: Payment + UPI Deeplink
+- [ ] Buckets screen — cards with progress bars
+- [ ] Add / Edit / Delete bucket
+- [ ] Overflow bucket (auto-created, non-deletable)
+- [ ] Bucket allocation validation
+- [ ] Low bucket warning logic
+- [ ] Monthly preset — save and auto-apply
+- [ ] `useBuckets` hook
+- [ ] `useMonthReset` hook
+
+## 🟡 Backlog — M4: Payment Flow + UPI
+
 - [ ] QR Scanner screen
 - [ ] Pay to Number screen
-- [ ] Payment flow modal (3 steps)
-- [ ] UPI deeplink builder (lib/upi.ts)
-- [ ] useUPIDeeplink hook
-- [ ] Payment confirmation flow
-- [ ] Pending payment recovery (AppState listener)
-- [ ] Auto-log on confirm
+- [ ] Payment flow modal — multi-step
+- [ ] UPI deeplink builder
+- [ ] Return flow — confirmation
+- [ ] Pending payment recovery
 
-## 🟡 Backlog — M5: Reminders + Reports
-- [ ] Reminders screen
-- [ ] Local push notifications
-- [ ] useReminders hook
-- [ ] Reports screen
-- [ ] Pie + Bar charts (Victory Native)
-- [ ] PDF export
-- [ ] useReports hook
+## 🟡 Backlog — M5–M8
 
-## 🟡 Backlog — M6: Firebase + Auth
-- [ ] Firebase project setup
-- [ ] Phone OTP auth
-- [ ] Firestore schema + sync
-- [ ] useBackup hook
-- [ ] App PIN + biometric lock
-- [ ] Settings screen
-
-## 🟡 Backlog — M7: AI Assistant
-- [ ] AI chat screen
-- [ ] useAI hook (Claude API)
-- [ ] System prompt builder
-- [ ] Log command parser
-- [ ] Confirmation before execution
-
-## 🟡 Backlog — M8: Polish + Launch
-- [ ] Onboarding flow
-- [ ] All empty states
-- [ ] Error states + retry
-- [ ] Sentry setup
-- [ ] App icon + splash
-- [ ] EAS Build config
-- [ ] Play Store submission
+- [ ] M5: Reminders + Reports
+- [ ] M6: Firebase Sync + Auth
+- [ ] M7: AI Assistant
+- [ ] M8: Polish + Launch
