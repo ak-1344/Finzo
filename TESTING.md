@@ -62,6 +62,20 @@ The only open issue (ISSUE-002) is a peer dependency warning that doesn't affect
 
 ## 🧪 What to Test
 
+### Temporary Blocking Milestone: TM0 — Account Sheet Rework
+> These are your new requirements. We will not move to M6 until they pass.
+- [ ] Home screen: total balance is NOT editable (no tap-to-edit modal)
+- [ ] Balance updates are ONLY possible from:
+  - [ ] Cashbook (manual add/edit/delete entries)
+  - [ ] Payment section (QR code scan + payment confirmation)
+- [ ] Buckets: "Overflow" is replaced by "Unallocated" everywhere
+- [ ] Buckets month-end logic: leftover and deleted bucket allocations move to "Unallocated"
+- [ ] Buckets UI: for each bucket, manual add/remove money works while monthly allocation budget rules remain consistent
+- [ ] Account sheet consistency: cashbook, buckets, and parties all reflect the same underlying money entries (no redundant/competing state)
+- [ ] Parties ledger: any money received from a party OR money given to a party is visible in Cashbook as an IN/OUT entry
+- [ ] Party-linked cashbook entries show correct sign (money received vs money going out)
+- [ ] UI polish: remove emojis (keep minimal) and improve aesthetics across Home / Cashbook / Buckets
+
 ### Core Features (M0-M5 Complete)
 
 #### 1. **Balance Management**
@@ -92,15 +106,15 @@ The only open issue (ISSUE-002) is a peer dependency warning that doesn't affect
 - [ ] Go to Buckets tab
 - [ ] Add bucket (e.g., "Food" with ₹2,000 allocation)
 - [ ] Add 2-3 more buckets (Transport, Entertainment, etc.)
-- [ ] Verify overflow bucket appears automatically
+- [ ] Verify unallocated bucket appears automatically
 - [ ] Add expense with bucket: Add Entry → OUT → tap "Select Bucket" → pick one
 - [ ] View Cashbook → verify bucket tag appears on entry
 - [ ] Go back to Buckets → verify spent amount and progress bar
 - [ ] Save Monthly Preset (button at top)
 - [ ] Toggle Auto-Apply → ON
-- [ ] Reset Month button → verify spending zeros, leftover moves to Overflow
+- [ ] Reset Month button → verify spending zeros, leftover moves to Unallocated
 - [ ] Edit bucket → change allocation
-- [ ] Delete bucket → verify allocation moves to Overflow
+- [ ] Delete bucket → verify allocation moves to Unallocated
 
 #### 5. **Payment Flow + UPI (M4)**
 - [ ] Home → tap "Scan QR" → grant camera permission

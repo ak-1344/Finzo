@@ -88,6 +88,25 @@
 - [x] More tab wired — Reminders and Reports now navigable (replaced "Coming Soon" stubs)
 - [x] Android bundle export verified (1625 modules, no errors)
 
+---
+## Current Milestone: TM0 — Account Sheet Rework (Temporary Blocking)
+
+### In Progress
+- [ ] Redesign data flow so the app behaves like a single account sheet (cashbook entries are the source of truth; no redundant money state)
+
+### Up Next
+- [ ] Buckets: replace the current "Overflow" bucket with a "Unallocated" bucket
+- [ ] Buckets: for each bucket, allow manual add/remove money while keeping the monthly allocation budget rules intact
+- [ ] Buckets month-end logic: leftover and deleted bucket allocations move to "Unallocated" (not Overflow)
+- [ ] Home screen: remove the ability to edit "total balance" (balance can only be updated in Cashbook or Payment)
+- [ ] Cashbook: ensure entries created from party give/get (money received OR going out) are visible in Cashbook
+- [ ] Payment: ensure payment confirmations are logged as cashbook entries and update bucket balances accordingly
+- [ ] Remove emojis from UI (keep minimal ones only where needed)
+- [ ] UI polish: improve aesthetics across Buckets / Cashbook / Home so it looks cleaner and more premium
+
+### Completed (TM0)
+- [ ] (none yet)
+
 ## 🟡 Backlog — M6–M8
 
 - [ ] M6: Firebase Sync + Auth

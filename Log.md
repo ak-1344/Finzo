@@ -4,6 +4,36 @@
 
 ---
 
+## Session 5 — TM0 Blocking Docs + Expo Web Fix
+
+### Done
+- Fixed Expo web blank-screen issue: browser `SyntaxError` from `import.meta` in the web bundle by updating `finzo/metro.config.js` to disable package-exports resolution and prefer `main` fields for web bundle deps
+- Started/verified Expo web UI on a stable port for screenshot/UI inspection (kept DevTools crash out by using `EXPO_UNSTABLE_HEADLESS=1`)
+- Seeded the new temporary blocking milestone `TM0 — Account Sheet Rework` into docs:
+  - `ToDo.md`: added TM0 checklist (unallocated bucket, per-bucket manual add/remove while preserving monthly allocation rules, non-editable home balance, money only via Cashbook/Payment/party flows, minimal/no emojis, UI polish)
+  - `CurrentStatus.md`: set active milestone to TM0
+  - `TESTING.md`: added TM0 testing checklist + acceptance rules
+- Updated reference specifications to match TM0:
+  - `Docs/context.md`: Home balance becomes read-only; “Overflow” replaced by “Unallocated”; settings “Update balance” disabled in TM0; payment warning emoji removed
+  - `Docs/user-flow.md`: replaced manual balance update flow; parties give/get now requires matching Cashbook IN/OUT visibility; “Overflow” replaced by “Unallocated”; month-end leftover moves to Unallocated
+  - `Docs/plan.md` and `Docs/idea.md`: replaced Overflow with Unallocated
+  - `Docs/AGENT.md`: updated “Rules That Cannot Be Broken” to reference Unallocated
+
+### Decisions Made
+- Web bundling approach: force Metro resolution away from ESM/package-exports for web to avoid `import.meta` parsing failures in the classic `<script>` bundle
+- Product spec (TM0): treat app as a single account sheet; remove editable Home balance; unify money movement through Cashbook/Payment and ensure party flows reflect in Cashbook
+
+### Files Created / Modified
+- `finzo/metro.config.js` (MODIFIED — web resolver adjustments)
+- `ToDo.md` (MODIFIED — TM0 added)
+- `CurrentStatus.md` (MODIFIED — active milestone switched to TM0)
+- `TESTING.md` (MODIFIED — TM0 checklist added)
+- `Docs/context.md` (MODIFIED — Unallocated + balance rule updates)
+- `Docs/user-flow.md` (MODIFIED — party money visibility + Unallocated updates)
+- `Docs/plan.md` (MODIFIED — Unallocated references)
+- `Docs/idea.md` (MODIFIED — Unallocated references)
+- `Docs/AGENT.md` (MODIFIED — Unallocated rules)
+
 ## Session 4 — M4 + M5 Complete (Payment Flow + UPI Deeplink + Reminders + Reports)
 
 ### Done

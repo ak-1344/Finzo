@@ -13,7 +13,7 @@ The command center. Accessible, action-first layout.
 
 **Top Section:**
 - Greeting + date
-- Current total balance (manually updated, editable on tap)
+- Current total balance (read-only; updated via Cashbook / Payment entries)
 - "Cash in Hand" figure prominently
 
 **Quick Actions Row (horizontal icon buttons):**
@@ -79,7 +79,7 @@ Person-level give/get ledger (Khatabook style).
 Envelope budgeting system. Separate from cashbook logic.
 
 **Balance Input Bar (top):**
-- "Your current balance: ₹____" (editable)
+- "Your current balance: ₹____" (read-only; derived from Cashbook / Payment entries)
 - Unallocated: ₹X (grayed out)
 
 **Bucket Cards:**
@@ -91,14 +91,14 @@ Envelope budgeting system. Separate from cashbook logic.
 - + Add Bucket
 - Edit bucket (name, amount, color, icon)
 - Delete bucket
-- Reset (redistribute leftover to overflow)
+- Reset (redistribute leftover to unallocated)
 
 **Month Preset:**
 - Save current split as monthly template
 - Auto-fill on 1st of every month
-- Leftover from last month → Overflow bucket
+- Leftover from last month → Unallocated bucket
 
-**Overflow Bucket:**
+**Unallocated Bucket:**
 - Always exists, cannot be deleted
 - Catches: leftover from previous month + unallocated money
 
@@ -115,7 +115,7 @@ Triggered from: Scan QR, Pay to Number, or Pay button inside party ledger.
 **Step 2: Which Bucket?**
 - List of buckets with current balance shown
 - Select one (or "No Category" for untagged)
-- If selected bucket balance < amount → warning banner: "⚠️ Food bucket only has ₹150. You're paying ₹200."
+- If selected bucket balance < amount → warning banner: "Warning: Food bucket only has ₹150. You're paying ₹200."
 - User can still proceed
 
 **Step 3: Confirm**
@@ -160,7 +160,7 @@ Self-reminders only. Not sent to other people.
 ---
 
 ### 9. ⚙️ Settings / More Screen
-- Update balance (manual sync)
+- Update balance (disabled in TM0; update total only via Cashbook / Payment)
 - Manage buckets (shortcut)
 - Monthly preset manager
 - Currency (default INR)
@@ -187,7 +187,7 @@ Chat interface.
 ## Features — Full List
 
 ### Core
-- [x] Manual balance input (editable anytime)
+- [ ] Manual balance input removed; total balance updates only from Cashbook / Payment
 - [x] Cash in hand tracker
 - [x] IN / OUT transaction logging
 - [x] Label + timestamp per entry
@@ -206,7 +206,7 @@ Chat interface.
 - [x] Remaining balance per bucket
 - [x] Warning on low bucket before payment
 - [x] Auto-refill on 1st of month from preset
-- [x] Leftover → Overflow bucket
+- [ ] Leftover → Unallocated bucket
 - [x] Untagged transactions → No Category
 
 ### Parties

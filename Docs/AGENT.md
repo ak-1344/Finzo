@@ -73,7 +73,7 @@ Format:
 
 ### Decisions Made
 - Using MMKV over AsyncStorage for speed
-- Overflow bucket ID hardcoded as 'overflow' for simplicity
+- Unallocated bucket ID hardcoded as 'unallocated' for simplicity
 
 ### Files Created / Modified
 - app/(tabs)/index.tsx
@@ -319,7 +319,7 @@ AppState.addEventListener('change', (state) => {
 ## ⚠️ Step 8 — Rules That Cannot Be Broken
 
 1. **Never auto-log a payment.** Always ask user to confirm after returning from UPI app.
-2. **Never delete the Overflow bucket.** It is always present, auto-managed.
+2. **Never delete the Unallocated bucket.** It is always present, auto-managed.
 3. **Never let bucket allocation exceed total balance** without a warning.
 4. **All money amounts in paise internally** (multiply by 100), display in rupees. Prevents float errors.
 5. **AI assistant never auto-executes** — always shows "Log this?" confirmation before saving an AI-suggested entry.

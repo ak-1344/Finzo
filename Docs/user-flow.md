@@ -88,13 +88,14 @@ Home → "Add Entry"
 
 ---
 
-## 6. Update Balance Manually
+## 6. Balance Updates Rule (Account Sheet)
 
 ```
-Home → Tap balance amount (or Settings → Update Balance)
-→ Edit field opens
-→ Enter new balance (e.g., after checking bank app)
-→ Confirm → app recalculates bucket overflows/allocations
+Balance is read-only on Home.
+Total balance changes only when you create money movements:
+  - Cashbook: Add/Edit/Delete entries (IN / OUT)
+  - Payment: QR scan + payment confirmation ("Did it go through?") logs the entry
+Buckets and parties are derived from the same underlying cashbook entries.
 ```
 
 ---
@@ -109,7 +110,7 @@ Buckets tab → "Add Bucket"
 → Allocated amount
 → Save
 → Repeat for each bucket
-→ Overflow bucket auto-exists with remaining balance
+→ Unallocated bucket auto-exists with remaining balance
 ```
 
 ---
@@ -121,7 +122,7 @@ Buckets tab → "Monthly Preset"
 → Adjust amounts per bucket
 → "Save as Preset"
 → Toggle: "Auto-apply on 1st of each month" → ON
-→ On 1st: buckets reset, previous leftover → Overflow ✅
+→ On 1st: buckets reset, previous leftover → Unallocated ✅
 ```
 
 ---
@@ -145,9 +146,9 @@ Parties tab → "Add Customer" (or Add Supplier)
 ```
 Parties → Tap Rachit
 → Tap "Given" → Enter ₹173 → note "dinner" → Save
-  → Rachit's balance: he owes you ₹173
+  → Party ledger updates AND a matching cashbook IN/OUT entry is visible in Cashbook
 → Later: Tap "Received" → ₹173 → Save
-  → Balance: ₹0 (Settled)
+  → Party ledger updates AND the matching cashbook entry is updated
 ```
 
 ---
@@ -210,7 +211,7 @@ More → AI Assistant
 ```
 User tries to pay ₹500 from Food bucket
 → Food bucket has ₹300
-→ Warning: "⚠️ Food bucket only has ₹300. You're short by ₹200."
+→ Warning: "Food bucket only has ₹300. You're short by ₹200."
 → Options:
   a) Switch bucket → pick another
   b) Proceed anyway → deducts, bucket goes negative (shown in red)
@@ -223,9 +224,9 @@ User tries to pay ₹500 from Food bucket
 
 ```
 [Triggered automatically on 1st of month]
-→ Each bucket: leftover amount moved to Overflow
+→ Each bucket: leftover amount moved to Unallocated
 → Buckets refilled from preset template
-→ Notification: "New month, buckets refilled! Overflow: ₹843 from last month."
+→ Notification: "New month, buckets refilled! Unallocated: ₹843 from last month."
 ```
 
 ---
@@ -284,5 +285,5 @@ Cashbook → Swipe left on entry
 | Bucket allocated > total balance | Warning at setup: "Allocated more than balance" |
 | All buckets at 0, user tries to pay | App lets them proceed with "No Category" warning |
 | No internet | All features work offline. Firebase syncs when back online |
-| Manual balance update mid-month | Overflow bucket adjusts. Other buckets unchanged |
+| Cashbook entry added mid-month | Unallocated bucket adjusts. Other buckets unchanged |
 | Party balance goes negative (they overpaid) | Shows "They have credit of ₹X" |

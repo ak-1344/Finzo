@@ -34,10 +34,10 @@ A modular finance app with 4 layers:
 ### Layer 2 — Bucket System (Envelope Budgeting)
 > Virtually divide your balance into purpose-specific buckets.
 
-- You have ₹5000 → split: Food ₹2000 / Shopping ₹2000 / Misc ₹500 / Overflow ₹500
+- You have ₹5000 → split: Food ₹2000 / Shopping ₹2000 / Misc ₹500 / Unallocated ₹500
 - Every payment is tagged to a bucket
 - If a bucket runs low → app warns you before you pay
-- Month-end leftover → auto-moves to Overflow bucket
+- Month-end leftover → auto-moves to Unallocated bucket
 - New month → auto-refill buckets as per your saved preset
 
 ### Layer 3 — Parties (Give / Get Ledger)

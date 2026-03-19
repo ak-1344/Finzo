@@ -108,11 +108,11 @@
 
 - [ ] Buckets screen — cards with progress bars
 - [ ] Add / Edit / Delete bucket
-- [ ] Overflow bucket (auto-created, non-deletable)
+- [ ] Unallocated bucket (auto-created, non-deletable)
 - [ ] Bucket allocation validation (cannot exceed total balance)
 - [ ] Low bucket warning logic
 - [ ] Monthly preset — save and auto-apply
-- [ ] Month-end auto reset + leftover → Overflow
+- [ ] Month-end auto reset + leftover → Unallocated
 - [ ] `useBuckets` hook
 - [ ] `useMonthReset` hook (scheduled trigger)
 
