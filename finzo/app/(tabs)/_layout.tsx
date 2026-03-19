@@ -4,15 +4,15 @@ import { Colors } from '../../constants/colors';
 
 type TabIconProps = {
   label: string;
-  emoji: string;
+  icon: string;
   color: string;
   focused: boolean;
 };
 
-function TabIcon({ label, emoji, color, focused }: TabIconProps) {
+function TabIcon({ label, icon, color, focused }: TabIconProps) {
   return (
     <View className="items-center justify-center pt-1">
-      <Text style={{ fontSize: 22 }}>{emoji}</Text>
+      <Text style={{ color, fontSize: 18, fontWeight: focused ? '700' : '400' }}>{icon}</Text>
       <Text
         style={{ color, fontSize: 10, fontWeight: focused ? '700' : '500' }}
         className="mt-0.5"
@@ -44,7 +44,7 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon label="Home" emoji="🏠" color={color} focused={focused} />
+            <TabIcon label="Home" icon="⌂" color={color} focused={focused} />
           ),
         }}
       />
@@ -52,7 +52,7 @@ export default function TabLayout() {
         name="cashbook"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon label="Cashbook" emoji="📒" color={color} focused={focused} />
+            <TabIcon label="Cashbook" icon="☰" color={color} focused={focused} />
           ),
         }}
       />
@@ -60,7 +60,7 @@ export default function TabLayout() {
         name="parties"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon label="Parties" emoji="👥" color={color} focused={focused} />
+            <TabIcon label="Parties" icon="⇌" color={color} focused={focused} />
           ),
         }}
       />
@@ -68,7 +68,7 @@ export default function TabLayout() {
         name="buckets"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon label="Buckets" emoji="🪣" color={color} focused={focused} />
+            <TabIcon label="Buckets" icon="▣" color={color} focused={focused} />
           ),
         }}
       />
@@ -76,7 +76,7 @@ export default function TabLayout() {
         name="more"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon label="More" emoji="⚙️" color={color} focused={focused} />
+            <TabIcon label="More" icon="⋯" color={color} focused={focused} />
           ),
         }}
       />

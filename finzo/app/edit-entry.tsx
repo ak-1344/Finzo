@@ -187,9 +187,9 @@ export default function EditEntryScreen() {
           <View className="flex-row gap-2 mb-6">
             {(
               [
-                { key: 'cash', label: '💵 Cash' },
-                { key: 'upi', label: '📱 UPI' },
-                { key: 'manual', label: '📝 Other' },
+                { key: 'cash', label: 'Cash' },
+                { key: 'upi', label: 'UPI' },
+                { key: 'manual', label: 'Other' },
               ] as { key: 'cash' | 'upi' | 'manual'; label: string }[]
             ).map((method) => (
               <TouchableOpacity

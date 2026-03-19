@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBalance } from '../../hooks/useBalance';
 import { useTransactions } from '../../hooks/useTransactions';
 import { useBuckets } from '../../hooks/useBuckets';
+import { useParties } from '../../hooks/useParties';
 import {
   formatRupees,
   formatTime,
@@ -26,6 +27,7 @@ export default function CashbookScreen() {
   const { groupedByDate, todayIn, todayOut, removeEntry, activeTransactions } =
     useTransactions();
   const { getBucketById, refundToBucket } = useBuckets();
+  const { getParty } = useParties();
   const [filter, setFilter] = useState<FilterType>('all');
 
   // Apply filter
@@ -155,7 +157,6 @@ export default function CashbookScreen() {
         stickySectionHeadersEnabled={false}
         ListEmptyComponent={
           <View className="items-center py-16">
-            <Text className="text-3xl mb-2">📒</Text>
             <Text className="text-text-secondary text-sm text-center">
               No entries yet.{'\n'}Start logging your income & expenses.
             </Text>
@@ -178,6 +179,7 @@ export default function CashbookScreen() {
         )}
         renderItem={({ item }) => {
           const bucket = item.bucketId ? getBucketById(item.bucketId) : null;
+          const party = item.partyId ? getParty(item.partyId) : null;
           return (
           <TouchableOpacity
             onPress={() => router.push(`/edit-entry?id=${item.id}`)}
@@ -188,7 +190,7 @@ export default function CashbookScreen() {
               <Text className="text-text-primary text-sm font-medium">
                 {item.label || 'Untitled'}
               </Text>
-              <View className="flex-row items-center mt-0.5">
+              <View className="flex-row items-center mt-0.5 flex-wrap">
                 <Text className="text-text-muted text-xs">
                   {formatTime(item.timestamp)} •{' '}
                   {item.paymentMethod === 'cash'
@@ -204,6 +206,11 @@ export default function CashbookScreen() {
                       style={{ backgroundColor: bucket.color }}
                     />
                     <Text className="text-text-muted text-[10px]">{bucket.name}</Text>
+                  </View>
+                )}
+                {party && (
+                  <View className="flex-row items-center ml-2">
+                    <Text className="text-primary text-[10px] font-medium">{party.name}</Text>
                   </View>
                 )}
               </View>

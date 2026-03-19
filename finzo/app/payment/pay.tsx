@@ -54,6 +54,7 @@ export default function PayScreen() {
   const [selectedApp, setSelectedApp] = useState<UPIAppName>('Google Pay');
   const [step, setStep] = useState<Step>('details');
   const [upiOpened, setUpiOpened] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const preselectedParty = params.partyId ? getParty(params.partyId) : undefined;
 
@@ -169,6 +170,9 @@ export default function PayScreen() {
   };
 
   const handleConfirmPayment = () => {
+    if (processing) return;
+    setProcessing(true);
+
     const payment = confirmPayment();
     if (!payment) {
       // Manual confirmation without pending store
@@ -207,6 +211,8 @@ export default function PayScreen() {
   };
 
   const handleDeclinePayment = () => {
+    if (processing) return;
+    setProcessing(true);
     cancelPayment();
     Alert.alert('Payment Cancelled', 'No entry was logged.', [
       { text: 'OK', onPress: () => router.back() },
@@ -335,7 +341,7 @@ export default function PayScreen() {
                   selectedBucket === null ? 'border-primary bg-primary/5' : 'border-gray-200'
                 }`}
               >
-                <Text className="text-xl mr-3">🏷️</Text>
+                <Text className="text-xl mr-3">—</Text>
                 <View className="flex-1">
                   <Text className="text-text-primary text-sm font-medium">No Category</Text>
                   <Text className="text-text-muted text-xs">Don't deduct from any bucket</Text>
@@ -368,7 +374,7 @@ export default function PayScreen() {
                       </Text>
                     </View>
                     {isLow && (
-                      <Text className="text-warning text-xs mr-2">⚠️ Low</Text>
+                      <Text className="text-warning text-xs mr-2">Low</Text>
                     )}
                     {selectedBucket?.id === bucket.id && (
                       <Text className="text-primary font-bold">✓</Text>
@@ -381,7 +387,7 @@ export default function PayScreen() {
               {selectedBucket && getRemaining(selectedBucket) < amountPaise && (
                 <View className="bg-warning/10 rounded-xl p-3 mt-2 mb-4">
                   <Text className="text-warning text-sm">
-                    ⚠️ {selectedBucket.name} only has{' '}
+                    Warning: {selectedBucket.name} only has{' '}
                     {formatRupees(getRemaining(selectedBucket))}. You're paying{' '}
                     {formatRupees(amountPaise)}.
                   </Text>
@@ -503,7 +509,7 @@ export default function PayScreen() {
           {/* STEP 4: Result — Did it go through? */}
           {step === 'result' && (
             <View className="items-center pt-8">
-              <Text className="text-5xl mb-4">🤔</Text>
+              <Text className="text-5xl mb-4">?</Text>
               <Text className="text-text-primary text-xl font-bold text-center mb-2">
                 Did your payment go through?
               </Text>
@@ -513,16 +519,18 @@ export default function PayScreen() {
 
               <TouchableOpacity
                 onPress={handleConfirmPayment}
-                className="bg-success w-full py-4 rounded-xl items-center mb-3"
+                disabled={processing}
+                className={`w-full py-4 rounded-xl items-center mb-3 ${processing ? 'bg-success/50' : 'bg-success'}`}
               >
                 <Text className="text-white text-base font-bold">
-                  ✓ Yes, payment successful
+                  {processing ? 'Logging...' : '✓ Yes, payment successful'}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleDeclinePayment}
-                className="bg-danger w-full py-4 rounded-xl items-center mb-3"
+                disabled={processing}
+                className={`w-full py-4 rounded-xl items-center mb-3 ${processing ? 'bg-danger/50' : 'bg-danger'}`}
               >
                 <Text className="text-white text-base font-bold">
                   ✗ No, it didn't go through
@@ -531,10 +539,11 @@ export default function PayScreen() {
 
               <TouchableOpacity
                 onPress={handlePay}
+                disabled={processing}
                 className="w-full py-4 rounded-xl items-center border border-gray-200"
               >
                 <Text className="text-text-secondary text-base font-medium">
-                  🔄 Try again with different app
+                  Retry with different app
                 </Text>
               </TouchableOpacity>
             </View>

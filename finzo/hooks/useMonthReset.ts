@@ -1,43 +1,41 @@
-import { useEffect } from 'react';
-import { useBucketStore } from '../store/bucketStore';
+import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+import { useBucketStore } from '../store/bucketStore';
 
 /**
- * Hook that checks on app foreground if month has changed,
- * and triggers a bucket reset if needed.
- *
- * Call this once in the root layout or home screen.
+ * Hook to auto-reset buckets on month change.
+ * Checks on mount and whenever app comes to foreground.
  */
 export function useMonthReset() {
   const { lastResetMonth, monthPreset, resetMonth } = useBucketStore();
+  const hasChecked = useRef(false);
 
+  const checkAndReset = () => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+    if (lastResetMonth !== currentMonth && monthPreset?.autoApply) {
+      resetMonth();
+    }
+  };
+
+  // Check on mount
   useEffect(() => {
-    const checkAndReset = () => {
-      const now = new Date();
-      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    if (!hasChecked.current) {
+      checkAndReset();
+      hasChecked.current = true;
+    }
+  }, []);
 
-      // If we've never reset, or it's a new month, trigger reset
-      if (lastResetMonth && lastResetMonth !== currentMonth) {
-        // Only auto-reset if preset exists with autoApply
-        if (monthPreset?.autoApply) {
-          resetMonth();
-        }
+  // Check on app foreground
+  useEffect(() => {
+    const handleAppState = (nextState: AppStateStatus) => {
+      if (nextState === 'active') {
+        checkAndReset();
       }
     };
 
-    // Check on mount
-    checkAndReset();
-
-    // Check when app comes to foreground
-    const subscription = AppState.addEventListener(
-      'change',
-      (state: AppStateStatus) => {
-        if (state === 'active') {
-          checkAndReset();
-        }
-      }
-    );
-
-    return () => subscription.remove();
-  }, [lastResetMonth, monthPreset, resetMonth]);
+    const sub = AppState.addEventListener('change', handleAppState);
+    return () => sub.remove();
+  }, [lastResetMonth, monthPreset]);
 }

@@ -164,9 +164,9 @@ export default function AddEntryScreen() {
           <View className="flex-row gap-2 mb-6">
             {(
               [
-                { key: 'cash', label: '💵 Cash' },
-                { key: 'upi', label: '📱 UPI' },
-                { key: 'manual', label: '📝 Other' },
+                { key: 'cash', label: 'Cash' },
+                { key: 'upi', label: 'UPI' },
+                { key: 'manual', label: 'Other' },
               ] as { key: 'cash' | 'upi' | 'manual'; label: string }[]
             ).map((method) => (
               <TouchableOpacity
@@ -308,7 +308,7 @@ export default function AddEntryScreen() {
 
               {activeParties.length === 0 ? (
                 <View className="items-center py-10">
-                  <Text className="text-4xl mb-3">👥</Text>
+                  <Text className="text-4xl mb-3">+</Text>
                   <Text className="text-text-muted text-sm">No parties yet</Text>
                   <TouchableOpacity
                     onPress={() => {
@@ -393,7 +393,7 @@ export default function AddEntryScreen() {
 
               {activeBuckets.length === 0 ? (
                 <View className="items-center py-10">
-                  <Text className="text-4xl mb-3">🪣</Text>
+                  <Text className="text-4xl mb-3">+</Text>
                   <Text className="text-text-muted text-sm">No buckets yet</Text>
                   <TouchableOpacity
                     onPress={() => {
@@ -437,8 +437,8 @@ export default function AddEntryScreen() {
                         <View className="flex-1">
                           <Text className="text-text-primary text-sm font-medium">
                             {item.name}
-                            {item.isOverflow && (
-                              <Text className="text-text-muted text-xs"> (overflow)</Text>
+                            {item.isUnallocated && (
+                              <Text className="text-text-muted text-xs"> (unallocated)</Text>
                             )}
                           </Text>
                           <View className="flex-row items-center">

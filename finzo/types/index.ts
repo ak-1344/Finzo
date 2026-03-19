@@ -24,7 +24,10 @@ export interface Bucket {
   allocatedAmount: number;
   /** Amount spent in paise */
   spentAmount: number;
+  /** @deprecated Use isUnallocated instead. Kept for backward compatibility migration. */
   isOverflow: boolean;
+  /** Whether this is the system Unallocated bucket (cannot be deleted) */
+  isUnallocated: boolean;
   isDeleted: boolean; // soft-delete
   createdAt: number;
 }
@@ -49,6 +52,8 @@ export interface PartyTransaction {
   timestamp: number;
   isSettlement: boolean;
   isDeleted: boolean;
+  /** ID of the matching cashbook entry (for TM0 account-sheet linking) */
+  linkedCashbookTxId?: string;
 }
 
 export interface MonthPreset {

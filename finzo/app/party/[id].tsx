@@ -211,14 +211,14 @@ export default function PartyDetailScreen() {
               onPress={handleSettle}
               className="flex-1 bg-white/80 rounded-xl py-2.5 items-center border border-gray-200"
             >
-              <Text className="text-text-primary text-sm font-medium">✅ Settle</Text>
+              <Text className="text-text-primary text-sm font-medium">Settle</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
             onPress={handleShare}
             className="flex-1 bg-white/80 rounded-xl py-2.5 items-center border border-gray-200"
           >
-            <Text className="text-text-primary text-sm font-medium">📤 Share</Text>
+            <Text className="text-text-primary text-sm font-medium">Share</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -256,7 +256,7 @@ export default function PartyDetailScreen() {
                 }`}
               >
                 <Text className="text-sm">
-                  {item.isSettlement ? '✅' : item.type === 'give' ? '↑' : '↓'}
+                  {item.isSettlement ? 'S' : item.type === 'give' ? '↑' : '↓'}
                 </Text>
               </View>
               <View className="flex-1">

@@ -115,7 +115,7 @@ export default function PartiesScreen() {
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
         ListEmptyComponent={
           <View className="items-center py-16">
-            <Text className="text-3xl mb-2">👥</Text>
+            <Text className="text-text-primary text-lg font-semibold mb-2">No Parties Yet</Text>
             <Text className="text-text-secondary text-sm text-center">
               No parties yet.{'\n'}Add someone to track who owes you.
             </Text>

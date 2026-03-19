@@ -12,7 +12,7 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBuckets } from '../hooks/useBuckets';
-import { BUCKET_COLORS, BUCKET_ICONS, OVERFLOW_BUCKET_ID } from '../store/bucketStore';
+import { BUCKET_COLORS, BUCKET_ICONS, UNALLOCATED_BUCKET_ID } from '../store/bucketStore';
 import { rupeesToPaise, paiseToRupees, formatRupees } from '../lib/utils';
 
 export default function EditBucketScreen() {
@@ -30,7 +30,7 @@ export default function EditBucketScreen() {
   } = useBuckets();
 
   const bucket = id ? getBucketById(id) : undefined;
-  const isOverflow = bucket?.isOverflow ?? false;
+  const isUnallocated = bucket?.isUnallocated ?? false;
 
   const [name, setName] = useState(bucket?.name ?? '');
   const [icon, setIcon] = useState(bucket?.icon ?? BUCKET_ICONS[0]);
@@ -49,12 +49,12 @@ export default function EditBucketScreen() {
   if (!bucket) return null;
 
   // Max this bucket can be: (total balance - other allocations) = current allocation + unallocated
-  const otherAllocated = totalAllocated - (isOverflow ? 0 : bucket.allocatedAmount);
+  const otherAllocated = totalAllocated - (isUnallocated ? 0 : bucket.allocatedAmount);
   const maxForThisBucket = Math.max(0, totalBalance - otherAllocated);
 
   const handleSave = () => {
-    if (isOverflow) {
-      // Overflow only allows name/icon/color edit, not allocation
+    if (isUnallocated) {
+      // Unallocated only allows name/icon/color edit, not allocation
       updateBucket(bucket.id, { name, icon, color });
       router.back();
       return;
@@ -94,7 +94,7 @@ export default function EditBucketScreen() {
   const handleDelete = () => {
     Alert.alert(
       'Delete Bucket',
-      `Delete "${bucket.name}"? Remaining balance will move to Overflow.`,
+      `Delete "${bucket.name}"? Remaining balance will move to Unallocated.`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -125,7 +125,7 @@ export default function EditBucketScreen() {
             <Text className="text-primary text-base font-medium">← Back</Text>
           </TouchableOpacity>
           <Text className="text-text-primary text-lg font-bold">Edit Bucket</Text>
-          {!isOverflow ? (
+          {!isUnallocated ? (
             <TouchableOpacity onPress={handleDelete}>
               <Text className="text-danger text-sm font-medium">Delete</Text>
             </TouchableOpacity>
@@ -193,8 +193,8 @@ export default function EditBucketScreen() {
             placeholderTextColor="#9CA3AF"
           />
 
-          {/* Allocated Amount (not for overflow) */}
-          {!isOverflow && (
+          {/* Allocated Amount (not for unallocated) */}
+          {!isUnallocated && (
             <>
               <Text className="text-text-secondary text-xs font-medium uppercase tracking-wider mb-2">
                 Monthly Allocation
@@ -216,10 +216,10 @@ export default function EditBucketScreen() {
             </>
           )}
 
-          {isOverflow && (
+          {isUnallocated && (
             <View className="bg-primary/5 rounded-xl p-4 mb-5 border border-primary/20">
               <Text className="text-primary text-xs font-medium">
-                ℹ️ Overflow collects leftover from monthly resets and deleted buckets. Its allocation adjusts automatically.
+                Unallocated collects leftover from monthly resets and deleted buckets. Its allocation adjusts automatically.
               </Text>
             </View>
           )}

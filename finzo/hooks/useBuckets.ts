@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import {
   useBucketStore,
-  OVERFLOW_BUCKET_ID,
+  UNALLOCATED_BUCKET_ID,
 } from '../store/bucketStore';
 import { useBalanceStore } from '../store/balanceStore';
 import { Bucket } from '../types';
@@ -20,8 +20,10 @@ export function useBuckets() {
     deleteBucket,
     spendFromBucket,
     refundToBucket,
+    addMoneyToBucket,
+    removeMoneyFromBucket,
     reallocate,
-    ensureOverflowBucket,
+    ensureUnallocatedBucket,
     savePreset,
     applyPreset,
     toggleAutoApply,
@@ -31,9 +33,9 @@ export function useBuckets() {
 
   const { balance: totalBalance } = useBalanceStore();
 
-  // Ensure overflow bucket always exists
+  // Ensure unallocated bucket always exists
   useEffect(() => {
-    ensureOverflowBucket();
+    ensureUnallocatedBucket();
   }, []);
 
   /** All active (non-deleted) buckets */
@@ -42,15 +44,15 @@ export function useBuckets() {
     [buckets]
   );
 
-  /** User-created buckets only (no overflow) */
+  /** User-created buckets only (no unallocated) */
   const userBuckets = useMemo(
-    () => activeBuckets.filter((b) => !b.isOverflow),
+    () => activeBuckets.filter((b) => !b.isUnallocated),
     [activeBuckets]
   );
 
-  /** Overflow bucket */
-  const overflowBucket = useMemo(
-    () => activeBuckets.find((b) => b.isOverflow),
+  /** Unallocated bucket */
+  const unallocatedBucket = useMemo(
+    () => activeBuckets.find((b) => b.isUnallocated),
     [activeBuckets]
   );
 
@@ -68,8 +70,8 @@ export function useBuckets() {
 
   /** Unallocated amount = total balance - total allocated (paise) */
   const unallocated = useMemo(
-    () => Math.max(0, totalBalance - totalAllocated - (overflowBucket?.allocatedAmount ?? 0)),
-    [totalBalance, totalAllocated, overflowBucket]
+    () => Math.max(0, totalBalance - totalAllocated - (unallocatedBucket?.allocatedAmount ?? 0)),
+    [totalBalance, totalAllocated, unallocatedBucket]
   );
 
   /** Get remaining budget for a bucket (paise) */
@@ -106,13 +108,13 @@ export function useBuckets() {
 
   /** Check if allocation exceeds balance */
   const canAllocate = (additionalAmount: number): boolean => {
-    return totalAllocated + additionalAmount + (overflowBucket?.allocatedAmount ?? 0) <= totalBalance;
+    return totalAllocated + additionalAmount + (unallocatedBucket?.allocatedAmount ?? 0) <= totalBalance;
   };
 
   /** Max allocatable for a new/edited bucket */
   const maxAllocatable = useMemo(
-    () => Math.max(0, totalBalance - totalAllocated - (overflowBucket?.allocatedAmount ?? 0)),
-    [totalBalance, totalAllocated, overflowBucket]
+    () => Math.max(0, totalBalance - totalAllocated - (unallocatedBucket?.allocatedAmount ?? 0)),
+    [totalBalance, totalAllocated, unallocatedBucket]
   );
 
   /** Formatted values */
@@ -124,7 +126,7 @@ export function useBuckets() {
     // Data
     activeBuckets,
     userBuckets,
-    overflowBucket,
+    unallocatedBucket,
     totalAllocated,
     totalSpent,
     unallocated,
@@ -153,6 +155,8 @@ export function useBuckets() {
     deleteBucket,
     spendFromBucket,
     refundToBucket,
+    addMoneyToBucket,
+    removeMoneyFromBucket,
     reallocate,
     savePreset,
     applyPreset,

@@ -8,13 +8,13 @@ export default function MoreScreen() {
   const { balanceFormatted } = useBalance();
 
   const menuItems = [
-    { emoji: '💰', label: 'Update Balance', sublabel: `Current: ${balanceFormatted}`, available: false },
-    { emoji: '🔔', label: 'Reminders', sublabel: 'Manage your reminders', available: true, route: '/reminders' },
-    { emoji: '📊', label: 'Reports', sublabel: 'View spending reports', available: true, route: '/reports' },
-    { emoji: '🤖', label: 'AI Assistant', sublabel: 'Milestone 7', available: false },
-    { emoji: '☁️', label: 'Backup & Sync', sublabel: 'Milestone 6', available: false },
-    { emoji: '🔒', label: 'App Lock', sublabel: 'Milestone 6', available: false },
-    { emoji: 'ℹ️', label: 'About FINZO', sublabel: 'v1.0.0', available: false },
+    { label: 'Update Balance', sublabel: 'Changes via Cashbook only', available: false },
+    { label: 'Reminders', sublabel: 'Manage your reminders', available: true, route: '/reminders' },
+    { label: 'Reports', sublabel: 'View spending reports', available: true, route: '/reports' },
+    { label: 'AI Assistant', sublabel: 'Milestone 7', available: false },
+    { label: 'Backup & Sync', sublabel: 'Milestone 6', available: false },
+    { label: 'App Lock', sublabel: 'Milestone 6', available: false },
+    { label: 'About FINZO', sublabel: 'v1.0.0', available: false },
   ];
 
   return (
@@ -35,7 +35,6 @@ export default function MoreScreen() {
             }}
             className="bg-card rounded-xl p-4 mb-2 flex-row items-center border border-gray-100"
           >
-            <Text className="text-xl mr-4">{item.emoji}</Text>
             <View className="flex-1">
               <Text className="text-text-primary text-sm font-medium">
                 {item.label}

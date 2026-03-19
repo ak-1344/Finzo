@@ -4,7 +4,10 @@ import { Bucket, MonthPreset } from '../types';
 import { asyncStorageAdapter } from '../lib/storage';
 import { generateId } from '../lib/utils';
 
-/** Hardcoded overflow bucket ID */
+/** Hardcoded unallocated bucket ID */
+export const UNALLOCATED_BUCKET_ID = 'unallocated';
+
+/** @deprecated Use UNALLOCATED_BUCKET_ID. Kept for migration from older data. */
 export const OVERFLOW_BUCKET_ID = 'overflow';
 
 /** Preset color palette for new buckets */
@@ -19,10 +22,10 @@ export const BUCKET_COLORS = [
   '#059669', // emerald
 ] as const;
 
-/** Preset icons */
+/** Preset icons — category initials for clean UI */
 export const BUCKET_ICONS = [
-  '🍔', '🛒', '🏠', '💡', '🚗', '🎓', '💊', '🎉',
-  '👕', '📱', '✈️', '🎬', '💰', '🎁', '🏋️', '📚',
+  'F', 'T', 'S', 'B', 'H', 'E', 'M', 'G',
+  'R', 'U', 'I', 'P', 'W', 'L', 'D', 'C',
 ] as const;
 
 interface BucketStore {
@@ -33,12 +36,16 @@ interface BucketStore {
   // Bucket CRUD
   addBucket: (data: Pick<Bucket, 'name' | 'icon' | 'color' | 'allocatedAmount'>) => Bucket;
   updateBucket: (id: string, update: Partial<Bucket>) => void;
-  deleteBucket: (id: string) => void; // soft-delete, move allocation to overflow
+  deleteBucket: (id: string) => void; // soft-delete, move allocation to unallocated
   spendFromBucket: (bucketId: string, amount: number) => void;
   refundToBucket: (bucketId: string, amount: number) => void;
 
-  // Overflow bucket
-  ensureOverflowBucket: () => void;
+  // Manual add/remove money
+  addMoneyToBucket: (bucketId: string, amount: number) => void;
+  removeMoneyFromBucket: (bucketId: string, amount: number) => void;
+
+  // Unallocated bucket
+  ensureUnallocatedBucket: () => void;
 
   // Allocation
   reallocate: (bucketId: string, newAmount: number) => void;
@@ -53,7 +60,7 @@ interface BucketStore {
 
   // Derived
   getActiveBuckets: () => Bucket[];
-  getOverflowBucket: () => Bucket | undefined;
+  getUnallocatedBucket: () => Bucket | undefined;
   getBucketById: (id: string) => Bucket | undefined;
   getTotalAllocated: () => number;
 }
@@ -65,21 +72,43 @@ export const useBucketStore = create<BucketStore>()(
       monthPreset: null,
       lastResetMonth: null,
 
-      ensureOverflowBucket: () => {
+      ensureUnallocatedBucket: () => {
         const { buckets } = get();
-        const exists = buckets.find((b) => b.id === OVERFLOW_BUCKET_ID);
+
+        // Migration: rename old 'overflow' bucket to 'unallocated'
+        const oldOverflow = buckets.find((b) => b.id === OVERFLOW_BUCKET_ID);
+        if (oldOverflow) {
+          set({
+            buckets: buckets.map((b) =>
+              b.id === OVERFLOW_BUCKET_ID
+                ? {
+                    ...b,
+                    id: UNALLOCATED_BUCKET_ID,
+                    name: 'Unallocated',
+                    icon: '—',
+                    isOverflow: false,
+                    isUnallocated: true,
+                  }
+                : b
+            ),
+          });
+          return;
+        }
+
+        const exists = buckets.find((b) => b.id === UNALLOCATED_BUCKET_ID);
         if (!exists) {
           set({
             buckets: [
               ...buckets,
               {
-                id: OVERFLOW_BUCKET_ID,
-                name: 'Overflow',
-                icon: '🪣',
+                id: UNALLOCATED_BUCKET_ID,
+                name: 'Unallocated',
+                icon: '—',
                 color: '#6B7280',
                 allocatedAmount: 0,
                 spentAmount: 0,
-                isOverflow: true,
+                isOverflow: false,
+                isUnallocated: true,
                 isDeleted: false,
                 createdAt: Date.now(),
               },
@@ -89,8 +118,8 @@ export const useBucketStore = create<BucketStore>()(
       },
 
       addBucket: (data) => {
-        // Ensure overflow exists before adding
-        get().ensureOverflowBucket();
+        // Ensure unallocated exists before adding
+        get().ensureUnallocatedBucket();
 
         const newBucket: Bucket = {
           id: generateId(),
@@ -100,6 +129,7 @@ export const useBucketStore = create<BucketStore>()(
           allocatedAmount: data.allocatedAmount,
           spentAmount: 0,
           isOverflow: false,
+          isUnallocated: false,
           isDeleted: false,
           createdAt: Date.now(),
         };
@@ -117,19 +147,19 @@ export const useBucketStore = create<BucketStore>()(
       },
 
       deleteBucket: (id) => {
-        if (id === OVERFLOW_BUCKET_ID) return; // Cannot delete overflow
+        if (id === UNALLOCATED_BUCKET_ID) return; // Cannot delete unallocated
 
         const { buckets } = get();
         const bucket = buckets.find((b) => b.id === id);
         if (!bucket) return;
 
-        // Move remaining allocation to overflow
+        // Move remaining allocation to unallocated
         const remaining = bucket.allocatedAmount - bucket.spentAmount;
 
         set({
           buckets: buckets.map((b) => {
             if (b.id === id) return { ...b, isDeleted: true };
-            if (b.id === OVERFLOW_BUCKET_ID && remaining > 0) {
+            if (b.id === UNALLOCATED_BUCKET_ID && remaining > 0) {
               return { ...b, allocatedAmount: b.allocatedAmount + remaining };
             }
             return b;
@@ -157,8 +187,30 @@ export const useBucketStore = create<BucketStore>()(
         });
       },
 
+      addMoneyToBucket: (bucketId, amount) => {
+        if (bucketId === UNALLOCATED_BUCKET_ID) return; // Unallocated auto-adjusts
+        set({
+          buckets: get().buckets.map((b) =>
+            b.id === bucketId
+              ? { ...b, allocatedAmount: b.allocatedAmount + amount }
+              : b
+          ),
+        });
+      },
+
+      removeMoneyFromBucket: (bucketId, amount) => {
+        if (bucketId === UNALLOCATED_BUCKET_ID) return; // Unallocated auto-adjusts
+        set({
+          buckets: get().buckets.map((b) =>
+            b.id === bucketId
+              ? { ...b, allocatedAmount: Math.max(0, b.allocatedAmount - amount) }
+              : b
+          ),
+        });
+      },
+
       reallocate: (bucketId, newAmount) => {
-        if (bucketId === OVERFLOW_BUCKET_ID) return; // Overflow auto-calculated
+        if (bucketId === UNALLOCATED_BUCKET_ID) return; // Unallocated auto-calculated
 
         set({
           buckets: get().buckets.map((b) =>
@@ -168,7 +220,7 @@ export const useBucketStore = create<BucketStore>()(
       },
 
       savePreset: (autoApply) => {
-        const activeBuckets = get().getActiveBuckets().filter((b) => !b.isOverflow);
+        const activeBuckets = get().getActiveBuckets().filter((b) => !b.isUnallocated);
         const preset: MonthPreset = {
           id: 'default',
           buckets: activeBuckets.map((b) => ({
@@ -190,7 +242,7 @@ export const useBucketStore = create<BucketStore>()(
 
         set({
           buckets: buckets.map((b) => {
-            if (b.isOverflow || b.isDeleted) return b;
+            if (b.isUnallocated || b.isDeleted) return b;
             const presetEntry = monthPreset.buckets.find(
               (p) => p.bucketId === b.id
             );
@@ -216,11 +268,11 @@ export const useBucketStore = create<BucketStore>()(
       resetMonth: () => {
         const { buckets } = get();
 
-        // Calculate total leftover across all non-overflow buckets
+        // Calculate total leftover across all non-unallocated buckets
         let totalLeftover = 0;
         const resetBuckets = buckets.map((b) => {
           if (b.isDeleted) return b;
-          if (b.isOverflow) return b; // Handle overflow separately
+          if (b.isUnallocated) return b; // Handle unallocated separately
 
           const remaining = Math.max(0, b.allocatedAmount - b.spentAmount);
           totalLeftover += remaining;
@@ -229,16 +281,16 @@ export const useBucketStore = create<BucketStore>()(
           return { ...b, spentAmount: 0 };
         });
 
-        // Add leftover to overflow bucket
+        // Add leftover to unallocated bucket
         const finalBuckets = resetBuckets.map((b) => {
-          if (b.id === OVERFLOW_BUCKET_ID) {
-            const overflowLeftover = Math.max(
+          if (b.id === UNALLOCATED_BUCKET_ID) {
+            const unallocatedLeftover = Math.max(
               0,
               b.allocatedAmount - b.spentAmount
             );
             return {
               ...b,
-              allocatedAmount: overflowLeftover + totalLeftover,
+              allocatedAmount: unallocatedLeftover + totalLeftover,
               spentAmount: 0,
             };
           }
@@ -264,8 +316,8 @@ export const useBucketStore = create<BucketStore>()(
         return get().buckets.filter((b) => !b.isDeleted);
       },
 
-      getOverflowBucket: () => {
-        return get().buckets.find((b) => b.id === OVERFLOW_BUCKET_ID);
+      getUnallocatedBucket: () => {
+        return get().buckets.find((b) => b.id === UNALLOCATED_BUCKET_ID);
       },
 
       getBucketById: (id) => {

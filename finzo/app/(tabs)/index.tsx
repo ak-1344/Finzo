@@ -4,9 +4,6 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  TextInput,
-  Modal,
-  Alert,
   RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -19,29 +16,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const {
     balanceFormatted,
-    balanceRupees,
     hasSetBalance,
-    setBalanceFromRupees,
   } = useBalance();
   const { recentTransactions, todayIn, todayOut } = useTransactions();
-
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [balanceInput, setBalanceInput] = useState('');
-
-  const openEditBalance = () => {
-    setBalanceInput(balanceRupees > 0 ? balanceRupees.toString() : '');
-    setEditModalVisible(true);
-  };
-
-  const saveBalance = () => {
-    const value = parseFloat(balanceInput);
-    if (isNaN(value) || value < 0) {
-      Alert.alert('Invalid Amount', 'Please enter a valid amount.');
-      return;
-    }
-    setBalanceFromRupees(value);
-    setEditModalVisible(false);
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -56,10 +33,8 @@ export default function HomeScreen() {
           <Text className="text-xs text-text-muted mt-0.5">{getTodayString()}</Text>
         </View>
 
-        {/* Balance Card */}
-        <TouchableOpacity
-          onPress={openEditBalance}
-          activeOpacity={0.8}
+        {/* Balance Card — Read-Only (TM0) */}
+        <View
           className="mx-4 bg-primary rounded-2xl p-5 mt-2"
         >
           <Text className="text-white/70 text-sm">Total Balance</Text>
@@ -67,7 +42,7 @@ export default function HomeScreen() {
             {hasSetBalance ? balanceFormatted : '₹ —'}
           </Text>
           <Text className="text-white/50 text-xs mt-2">
-            Tap to {hasSetBalance ? 'update' : 'set'} balance
+            Updated via Cashbook & Payments
           </Text>
 
           {/* Today's summary */}
@@ -87,7 +62,7 @@ export default function HomeScreen() {
               </View>
             </View>
           )}
-        </TouchableOpacity>
+        </View>
 
         {/* Quick Actions */}
         <View className="px-4 mt-5">
@@ -96,22 +71,22 @@ export default function HomeScreen() {
           </Text>
           <View className="flex-row gap-3">
             <QuickAction
-              emoji="📷"
+              icon="⎘"
               label="Scan QR"
               onPress={() => router.push('/payment/scan')}
             />
             <QuickAction
-              emoji="📞"
+              icon="₹"
               label="Pay"
               onPress={() => router.push('/payment/pay')}
             />
             <QuickAction
-              emoji="➕"
+              icon="+"
               label="Add Entry"
               onPress={() => router.push('/add-entry')}
             />
             <QuickAction
-              emoji="👤"
+              icon="⊕"
               label="Add Party"
               onPress={() => router.push('/add-party')}
             />
@@ -133,7 +108,6 @@ export default function HomeScreen() {
 
           {recentTransactions.length === 0 ? (
             <View className="bg-card rounded-xl p-8 items-center border border-gray-100">
-              <Text className="text-3xl mb-2">📒</Text>
               <Text className="text-text-secondary text-sm text-center">
                 No transactions yet.{'\n'}Tap "Add Entry" to get started!
               </Text>
@@ -169,71 +143,16 @@ export default function HomeScreen() {
           )}
         </View>
       </ScrollView>
-
-      {/* Edit Balance Modal */}
-      <Modal
-        visible={editModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEditModalVisible(false)}
-      >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setEditModalVisible(false)}
-          className="flex-1 bg-black/50 justify-center items-center px-6"
-        >
-          <TouchableOpacity
-            activeOpacity={1}
-            className="bg-card w-full rounded-2xl p-6"
-          >
-            <Text className="text-text-primary text-lg font-bold mb-1">
-              {hasSetBalance ? 'Update Balance' : 'Set Your Balance'}
-            </Text>
-            <Text className="text-text-secondary text-sm mb-4">
-              Enter your current total balance in rupees.
-            </Text>
-
-            <View className="flex-row items-center bg-background rounded-xl px-4 py-3 mb-4">
-              <Text className="text-text-primary text-xl font-bold mr-2">₹</Text>
-              <TextInput
-                className="flex-1 text-xl font-bold text-text-primary"
-                value={balanceInput}
-                onChangeText={setBalanceInput}
-                placeholder="0"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="numeric"
-                autoFocus
-                selectTextOnFocus
-              />
-            </View>
-
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                onPress={() => setEditModalVisible(false)}
-                className="flex-1 bg-background rounded-xl py-3 items-center"
-              >
-                <Text className="text-text-secondary font-semibold">Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={saveBalance}
-                className="flex-1 bg-primary rounded-xl py-3 items-center"
-              >
-                <Text className="text-white font-semibold">Save</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </TouchableOpacity>
-      </Modal>
     </SafeAreaView>
   );
 }
 
 function QuickAction({
-  emoji,
+  icon,
   label,
   onPress,
 }: {
-  emoji: string;
+  icon: string;
   label: string;
   onPress: () => void;
 }) {
@@ -243,7 +162,7 @@ function QuickAction({
       className="flex-1 bg-card rounded-xl py-3 items-center border border-gray-100"
       activeOpacity={0.7}
     >
-      <Text className="text-xl mb-1">{emoji}</Text>
+      <Text className="text-primary text-xl font-bold mb-1">{icon}</Text>
       <Text className="text-text-secondary text-xs font-medium">{label}</Text>
     </TouchableOpacity>
   );
