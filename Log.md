@@ -4,6 +4,29 @@
 
 ---
 
+## Session 6 — TM0 Account Sheet Rework (Complete)
+
+### Done
+- **Overflow → Unallocated rename**: Renamed bucket concept across `types/index.ts`, `bucketStore.ts`, `useBuckets.ts`, `edit-bucket.tsx`, `add-entry.tsx`. Added backward-compat migration in store hydration (old `overflow` bucket auto-migrates to `unallocated`).
+- **Home screen read-only balance**: Removed edit balance modal, `editModalVisible`/`balanceInput` state, and tap-to-edit behavior from `index.tsx`. Balance card is now a plain `<View>`, updated via Cashbook/Payment only.
+- **Party transactions isolated from Cashbook**: Party give/get only updates party balances — does NOT create cashbook entries. Only QR/Pay button payments create cashbook entries (via `pay.tsx`). This keeps party ledger and cashbook as separate concerns.
+- **Bucket add/remove money**: Added `addMoneyToBucket()` and `removeMoneyFromBucket()` to `bucketStore.ts`. Added UI buttons + modal on each bucket card in `buckets.tsx`.
+- **Emoji removal**: Replaced all system emojis across 12+ screen files with clean Unicode symbols or text labels. Tab bar: ⌂ ☰ ⇌ ▣ ⋯. Quick actions: ⎘ ₹ + ⊕. Kept user-selected bucket icon emojis (functionally required). Changed BUCKET_ICONS from emoji array to letter initials.
+- **UI polish**: Cleaner bucket cards, premium balance summary, better empty states, consistent warning text (no emoji).
+- **Fixed delete transaction**: Ensured `deleteTransaction` → `removeEntry` flow works correctly across all scopes (Cashbook long-press, Edit Entry delete).
+- **TypeScript compilation check**: `tsc --noEmit` passes (only pre-existing tsconfig.json ISSUE-003).
+
+### Files Modified
+`types/index.ts`, `store/bucketStore.ts`, `hooks/useBuckets.ts`, `hooks/useBalance.ts`, `hooks/useParties.ts`, `hooks/useMonthReset.ts`, `app/(tabs)/index.tsx`, `app/(tabs)/_layout.tsx`, `app/(tabs)/buckets.tsx`, `app/(tabs)/cashbook.tsx`, `app/(tabs)/more.tsx`, `app/(tabs)/parties.tsx`, `app/edit-bucket.tsx`, `app/add-entry.tsx`, `app/edit-entry.tsx`, `app/party/[id].tsx`, `app/payment/pay.tsx`
+
+### Decisions
+- Kept `isOverflow` in Bucket type as deprecated for backward compat — existing persisted data won't break
+- `OVERFLOW_BUCKET_ID` kept in `bucketStore.ts` only for migration detection
+- Party transactions are kept isolated — only QR/Pay button payments create cashbook entries
+- Balance hook still exposes `setBalanceFromRupees` for potential onboarding flow, but Home screen no longer uses it
+
+---
+
 ## Session 5 — TM0 Blocking Docs + Expo Web Fix
 
 ### Done

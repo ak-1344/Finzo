@@ -4,9 +4,9 @@
 
 ---
 
-**Active Milestone:** TM0 — Account Sheet Rework (Temporary Blocking)
-**Last Worked On:** Web UI verification (Buckets screen) + identified doc/spec gaps vs new requirements
-**Overall Progress:** ~62% (core M0–M5 complete, but TM0 requires blocking UI/data-flow rework before M6)
+**Active Milestone:** TM0 — Account Sheet Rework (COMPLETE)
+**Last Worked On:** TM0 full implementation — Overflow→Unallocated rename, read-only Home balance, party→cashbook linking, add/remove money, emoji removal
+**Overall Progress:** ~70% (M0–M5 + TM0 complete; ready for M6 Firebase Sync + Auth)
 
 ---
 
